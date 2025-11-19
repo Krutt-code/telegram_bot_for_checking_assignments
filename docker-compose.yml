@@ -1,0 +1,80 @@
+# Run
+## docker compose up --build
+
+# Stop
+## docker compose down
+
+# Для выключения старых образов redis
+## sudo lsof -i :6379
+## sudo systemctl stop redis
+
+## docker ps -a | grep redis
+## docker rm -f redis
+
+# Сбросить redis
+## docker compose exec redis redis-cli FLUSHALL
+
+services:
+  redis:
+    # для локального запуска redis-server --appendonly yes --save 60 1
+    image: redis:7
+    container_name: redis
+    env_file:
+      - .env
+    command: >
+      redis-server
+        --appendonly yes
+        --save 60 1
+        --requirepass :${REDIS_PASSWORD:-mypassword}
+        --rename-command FLUSHALL ""
+        --rename-command FLUSHDB  ""
+        --rename-command CONFIG   ""
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    restart: unless-stopped
+
+  database:
+    image: mysql:8
+    container_name: database
+    ports:
+      - "3311:3306"
+    entrypoint: 
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=bot
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+    restart: unless-stopped
+
+  bot:
+    container_name: bot
+    env_file:
+      - .env
+    volumes:
+      - ./log:/usr/src/app/logs
+    entrypoint: 
+      - REDIS_URL=redis://redis:6379/0
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=bot
+      - MYSQL_HOST=database
+    expose:
+      - "8000"
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - database
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  mysql_data:
+
+networks:
+  backend:
