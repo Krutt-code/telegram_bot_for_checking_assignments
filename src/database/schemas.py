@@ -1,12 +1,14 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.database.enums import AnswersStatusEnum, MediaEnum
 
 
 class MediaSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     media_type: MediaEnum
     message_id: int
     file_id: Optional[str] = None
@@ -14,12 +16,16 @@ class MediaSchema(BaseModel):
 
 
 class TelegramUserSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     user_id: int
     username: Optional[str]
     full_name: Optional[str]
 
 
 class TeacherSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     teacher_id: int
     user_id: int
     full_name: str
@@ -27,17 +33,23 @@ class TeacherSchema(BaseModel):
 
 
 class GroupSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     group_id: int
     name: str
 
 
 class StudentSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     student_id: int
     user_id: int
     group_id: int
 
 
 class HomeworkSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     homework_id: int
     teacher_id: int
     title: int
@@ -48,6 +60,8 @@ class HomeworkSchema(BaseModel):
 
 
 class AnswerSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     answer_id: int
     homework_id: int
     student_id: int

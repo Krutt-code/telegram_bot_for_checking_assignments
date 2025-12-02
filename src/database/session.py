@@ -1,4 +1,3 @@
-import time
 from contextlib import asynccontextmanager
 from datetime import datetime
 from functools import wraps
@@ -6,7 +5,7 @@ from functools import wraps
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from src import settings
+from src.core.settings import settings
 from src.database import database_logger
 
 # 1. Создаем асинхронный "движок" для подключения к базе данных.

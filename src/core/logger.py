@@ -114,10 +114,10 @@ class ModulLogger:
         self.log_file_name = log_file_name
 
     def get_logger(self, name: Optional[str] = None):
-        return get_logger(name=name, log_file_name=self._log_file_name)
+        return get_logger(name=name, log_file_name=self.log_file_name)
 
     def get_function_logger(self, func):
-        return get_function_logger(func=func, log_file_name=self._log_file_name)
+        return get_function_logger(func=func, log_file_name=self.log_file_name)
 
     def get_class_logger(self, obj):
         return get_class_logger(obj=obj, log_file_name=self.log_file_name)
