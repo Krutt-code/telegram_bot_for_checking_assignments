@@ -1,12 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import AdminsModel
-from src.database.session import with_session
+from src.db.models import AdminsModel
+from src.db.session import with_session
+from src.db.wraps import log_db_performance
 
 
 class AdminsRepository:
     @staticmethod
+    @log_db_performance
     @with_session
     async def is_admin(user_id: int, session: AsyncSession = None) -> bool:
         """

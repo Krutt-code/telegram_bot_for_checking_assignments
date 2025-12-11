@@ -27,7 +27,7 @@ class Settings(BaseSettings):
         ):
             encoded_user = quote_plus(self.mysql_url)
             encoded_password = quote_plus(self.mysql_password)
-            return f"mysql+asyncmy://{encoded_user}:{encoded_password}@{self.mysql_host}/{self.mysql_database}"
+            return f"mysql+aiomysql://{encoded_user}:{encoded_password}@{self.mysql_host}/{self.mysql_database}"
         else:
             raise ValueError(
                 "MYSQL_URL or all of MYSQL_USER, DB_PASSWORD, MYSQL_HOST, MYSQL_DATABASE must be set."

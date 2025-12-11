@@ -6,7 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from src.core.settings import settings
-from src.database import database_logger
+from src.db import database_logger
 
 # 1. Создаем асинхронный "движок" для подключения к базе данных.
 # Оптимизированные настройки для MySQL 5.7

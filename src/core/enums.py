@@ -2,7 +2,15 @@ from enum import StrEnum
 
 
 class AnswersStatusEnum(StrEnum):
-    SEND = "send"
+    """Статусы ответов
+
+    SENT - отправлен
+    REVIEWED - проверен
+    REJECTED - отклонен
+    ACCEPTED - принят
+    """
+
+    SENT = "sent"
     REVIEWED = "reviewed"
     REJECTED = "rejected"
     ACCEPTED = "accepted"
