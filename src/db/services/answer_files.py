@@ -12,10 +12,9 @@ class AnswerFilesService:
 
     answers_files_repository: AnswersFilesRepository = AnswersFilesRepository
 
+    @classmethod
     @with_session
     async def attach_file(
-        self, schema: AnswerFileCreateSchema, session: AsyncSession = None
+        cls, schema: AnswerFileCreateSchema, session: AsyncSession = None
     ) -> int:
-        return await self.answers_files_repository.create(schema, session=session)
-
-
+        return await cls.answers_files_repository.create(schema, session=session)

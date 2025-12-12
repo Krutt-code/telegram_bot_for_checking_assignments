@@ -11,6 +11,7 @@ from src.core.schemas import (
     AnswerFileCreateSchema,
     TelegramFileCreateSchema,
 )
+from src.db import database_logger
 from src.db.services import (
     AnswerFilesService,
     AnswersService,
@@ -22,7 +23,7 @@ from src.db.session import with_session
 
 class AssignmentsUseCase:
     """
-    Оркестратор для операций в “домашках”:
+    Оркестратор для операций в "заданиях":
     - отправка ответа (answer + файлы)
     - проверка/оценивание (проверки + апдейт ответа)
     """
@@ -32,9 +33,10 @@ class AssignmentsUseCase:
     telegram_files: TelegramFilesService = TelegramFilesService()
     answer_files: AnswerFilesService = AnswerFilesService()
 
+    @classmethod
     @with_session
     async def submit_answer(
-        self,
+        cls,
         answer: AnswerCreateSchema,
         telegram_files: Optional[Iterable[TelegramFileCreateSchema]] = None,
         session: AsyncSession = None,
@@ -42,12 +44,16 @@ class AssignmentsUseCase:
         """
         Атомарно создаёт ответ и (опционально) прикрепляет файлы.
         """
-        answer_id = await self.answers.create(answer, session=session)
+        logger = database_logger.get_function_logger(AssignmentsUseCase.submit_answer)
+        logger.info(f"Сохраняем ответ {answer}")
+
+        answer_id = await cls.answers.create(answer, session=session)
 
         if telegram_files:
+            logger.info("Сохраняем файлы")
             for tf in telegram_files:
-                telegram_file_id = await self.telegram_files.create(tf, session=session)
-                await self.answer_files.attach_file(
+                telegram_file_id = await cls.telegram_files.create(tf, session=session)
+                await cls.answer_files.attach_file(
                     AnswerFileCreateSchema(
                         answer_id=answer_id, telegram_file_id=telegram_file_id
                     ),
@@ -56,9 +62,14 @@ class AssignmentsUseCase:
 
         return answer_id
 
+    # async def update_answer(
+    #     cls,
+    # )
+
+    @classmethod
     @with_session
     async def grade_answer(
-        self,
+        cls,
         *,
         teacher_id: int,
         answer_id: int,
@@ -73,15 +84,15 @@ class AssignmentsUseCase:
         Права доступа вы можете проверять в роутерах, но эту проверку полезно держать
         как “страховку” на уровне use-case.
         """
-        answer = await self.answers.get_by_id(answer_id, session=session)
+        answer = await cls.answers.get_by_id(answer_id, session=session)
         if not answer:
             return False
 
-        homework = await self.homeworks.get_by_id(answer.homework_id, session=session)
+        homework = await cls.homeworks.get_by_id(answer.homework_id, session=session)
         if not homework or homework.teacher_id != teacher_id:
             raise PermissionError("Teacher has no access to this answer/homework")
 
-        return await self.answers.grade(
+        return await cls.answers.grade(
             answer_id=answer_id,
             grade=grade,
             teacher_comment=teacher_comment,

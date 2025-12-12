@@ -6,3 +6,7 @@ Use-cases / orchestrators (внутри слоя db).
 - должны выполняться атомарно (одна транзакция),
 - агрегируют вызовы низкоуровневых db/services.
 """
+
+from .assignments import AssignmentsUseCase
+
+__all__ = ["AssignmentsUseCase"]

@@ -14,16 +14,18 @@ class TelegramFilesService:
 
     telegram_files_repository: TelegramFilesRepository = TelegramFilesRepository
 
+    @classmethod
     @with_session
     async def create(
-        self, schema: TelegramFileCreateSchema, session: AsyncSession = None
+        cls, schema: TelegramFileCreateSchema, session: AsyncSession = None
     ) -> int:
-        return await self.telegram_files_repository.create(schema, session=session)
+        return await cls.telegram_files_repository.create(schema, session=session)
 
+    @classmethod
     @with_session
     async def get_by_id(
-        self, telegram_file_id: int, session: AsyncSession = None
+        cls, telegram_file_id: int, session: AsyncSession = None
     ) -> Optional[TelegramFileSchema]:
-        return await self.telegram_files_repository.get_by_id(
+        return await cls.telegram_files_repository.get_by_id(
             telegram_file_id, session=session, load_relationships=["owner_user"]
         )

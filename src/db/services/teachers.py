@@ -15,33 +15,35 @@ class TeachersService:
 
     teachers_repository: TeachersRepository = TeachersRepository
 
+    @classmethod
     @with_session
     async def create(
-        self, schema: TeacherCreateSchema, session: AsyncSession = None
+        cls, schema: TeacherCreateSchema, session: AsyncSession = None
     ) -> int:
-        return await self.teachers_repository.create(schema, session=session)
+        return await cls.teachers_repository.create(schema, session=session)
 
+    @classmethod
     @with_session
     async def get_by_id(
-        self, teacher_id: int, session: AsyncSession = None
+        cls, teacher_id: int, session: AsyncSession = None
     ) -> Optional[TeacherSchema]:
-        return await self.teachers_repository.get_by_id(teacher_id, session=session)
+        return await cls.teachers_repository.get_by_id(teacher_id, session=session)
 
+    @classmethod
     @with_session
     async def get_by_user_id(
-        self, user_id: int, session: AsyncSession = None
+        cls, user_id: int, session: AsyncSession = None
     ) -> Optional[TeacherSchema]:
-        teachers = await self.teachers_repository.get_all_where(
+        teachers = await cls.teachers_repository.get_all_where(
             where={TeachersModel.user_id: user_id},
             load_relationships=["user"],
             session=session,
         )
         return teachers[0] if teachers else None
 
+    @classmethod
     @with_session
-    async def delete(
-        self, teacher: TeacherSchema, session: AsyncSession = None
-    ) -> None:
-        return await self.teachers_repository.delete_by_id(
+    async def delete(cls, teacher: TeacherSchema, session: AsyncSession = None) -> None:
+        return await cls.teachers_repository.delete_by_id(
             teacher.teacher_id, session=session
         )

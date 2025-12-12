@@ -14,24 +14,23 @@ class HomeworksService:
 
     homeworks_repository: HomeworksRepository = HomeworksRepository
 
+    @classmethod
     @with_session
     async def create(
-        self, schema: HomeworkCreateSchema, session: AsyncSession = None
+        cls, schema: HomeworkCreateSchema, session: AsyncSession = None
     ) -> int:
-        return await self.homeworks_repository.create(schema, session=session)
+        return await cls.homeworks_repository.create(schema, session=session)
 
+    @classmethod
     @with_session
     async def get_by_id(
-        self, homework_id: int, session: AsyncSession = None
+        cls, homework_id: int, session: AsyncSession = None
     ) -> Optional[HomeworkSchema]:
-        return await self.homeworks_repository.get_by_id(
+        return await cls.homeworks_repository.get_by_id(
             homework_id, session=session, load_relationships=["teacher"]
         )
 
+    @classmethod
     @with_session
-    async def delete_by_id(
-        self, homework_id: int, session: AsyncSession = None
-    ) -> bool:
-        return await self.homeworks_repository.delete_by_id(
-            homework_id, session=session
-        )
+    async def delete_by_id(cls, homework_id: int, session: AsyncSession = None) -> bool:
+        return await cls.homeworks_repository.delete_by_id(homework_id, session=session)

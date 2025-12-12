@@ -1,3 +1,3 @@
-from src.core.logger import ModulLogger
+from .logger import database_logger
 
-database_logger = ModulLogger("database")
+__all__ = ["database_logger"]
