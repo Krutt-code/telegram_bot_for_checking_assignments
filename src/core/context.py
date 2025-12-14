@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from src.core.settings import settings
-from src.redis import RedisClient, RedisStateClient
+from src.redis import RedisClient, RedisTelegramUsersClient
 from src.services import AdminStorage, RoleStorage
 
 
@@ -17,17 +17,17 @@ class AppContext:
     """
 
     redis: RedisClient
-    redis_state: RedisStateClient
+    users_client: RedisTelegramUsersClient
     admin_storage: AdminStorage
     role_storage: RoleStorage
 
     @classmethod
     async def create(cls) -> "AppContext":
-        redis = RedisClient(settings.redis_url)
+        redis = RedisClient(settings.actual_redis_url)
         await redis.connect()
         return cls(
             redis=redis,
-            redis_state=RedisStateClient(redis),
+            users_client=RedisTelegramUsersClient(redis),
             admin_storage=AdminStorage(redis),
             role_storage=RoleStorage(redis),
         )

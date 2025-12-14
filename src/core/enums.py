@@ -38,3 +38,81 @@ class HomeworkMediaTypeEnum(StrEnum):
     PHOTO = MediaEnum.PHOTO.value
     DOCUMENT = MediaEnum.DOCUMENT.value
     VIDEO = MediaEnum.VIDEO.value
+
+
+class UserRoleEnum(StrEnum):
+    """
+    Роль, выбранная пользователем в боте.
+    """
+
+    STUDENT = "student"
+    TEACHER = "teacher"
+
+
+class CommandsEnum(StrEnum):
+    """
+    Внутренние команды бота.
+
+    Используется для связи хендлеров и кнопок.
+    """
+
+    START = "start"
+    ROLE = "role"
+    HELP = "help"
+
+    FULL_NAME_PANEL = "full_name_panel"
+    SET_FULL_NAME = "set_full_name"
+
+    STUDENT_ROLE = "student_role"
+    STUDENT_HOMEWORKS = "student_homeworks"
+    STUDENT_ANSWERS = "student_answers"
+    STUDENT_GROUP = "student_group"
+
+    TEACHER_ROLE = "teacher_role"
+    TEACHER_HOMEWORKS = "teacher_homeworks"
+
+    TEACHER_GROUPS = "teacher_groups"
+    TEACHER_GROUP_CREATE = "teacher_group_create"
+    TEACHER_GROUP_DELETE = "teacher_group_delete"
+    TEACHER_GROUP_EDIT = "teacher_group_edit"
+    TEACHER_GROUP_VIEW = "teacher_group_view"
+    TEACHER_GROUP_ADD_STUDENT = "teacher_group_add_student"
+    TEACHER_GROUP_REMOVE_STUDENT = "teacher_group_remove_student"
+
+    ADMIN_PANEL = "admin_panel"
+    ADMIN_STUDENTS = "admin_students"
+    ADMIN_GROUPS = "admin_groups"
+    ADMIN_TEACHERS = "admin_teachers"
+
+    BACK = "back"
+    CANCEL = "cancel"
+
+
+class ReplyKeyboardTypeEnum(StrEnum):
+    """
+    Типы готовых reply-клавиатур
+    """
+
+    ROLE = "role"
+    FULL_NAME_PANEL = "full_name_panel"
+    ADMIN = "admin"
+    ADMIN_PANEL = "admin_panel"
+    ADMIN_STUDENTS = "admin_students"
+    ADMIN_GROUPS = "admin_groups"
+    ADMIN_TEACHERS = "admin_teachers"
+
+    STUDENT = "student"
+    STUDENT_HOMEWORKS = "student_homeworks"
+    STUDENT_ANSWERS = "student_answers"
+
+    TEACHER = "teacher"
+    TEACHER_HOMEWORKS = "teacher_homeworks"
+    TEACHER_GROUPS = "teacher_groups"
+
+
+class InlineKeyboardTypeEnum(StrEnum):
+    """
+    Типы готовых inline-клавиатур
+    """
+
+    pass

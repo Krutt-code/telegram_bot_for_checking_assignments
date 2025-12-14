@@ -35,8 +35,6 @@ class TelegramFileSchema(BaseModel):
     owner_user_id: int
     caption: Optional[str] = None
     mime_type: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
     # Relationships
     owner_user: Optional["TelegramUserSchema"] = None
 
@@ -193,7 +191,7 @@ class StudentCreateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     user_id: int
-    group_id: int
+    group_id: Optional[int] = None
 
 
 class StudentSchema(BaseModel):
@@ -203,9 +201,7 @@ class StudentSchema(BaseModel):
 
     student_id: int
     user_id: int
-    group_id: int
-    updated_at: Optional[datetime] = None
-    created_at: Optional[datetime] = None
+    group_id: Optional[int] = None
     # Relationships
     user: Optional["TelegramUserSchema"] = None
     group: Optional["GroupSchema"] = None
@@ -235,8 +231,6 @@ class HomeworkSchema(BaseModel):
     text: str
     start_at: Optional[datetime] = None
     end_at: datetime
-    updated_at: Optional[datetime] = None
-    created_at: Optional[datetime] = None
     # Relationships
     teacher: Optional["TeacherSchema"] = None
 

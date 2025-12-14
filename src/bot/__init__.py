@@ -1,3 +1,3 @@
-from src.core.logger import ModulLogger
+from .logger import bot_logger
 
-bot_logger = ModulLogger("bot")
+__all__ = ["bot_logger"]
