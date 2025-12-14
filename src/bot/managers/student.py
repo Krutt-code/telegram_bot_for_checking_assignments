@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Iterable, Optional
+from typing import TYPE_CHECKING, Iterable, Optional
 
-from aiogram.types import CallbackQuery, Message
-
-from src.bot.managers.base import BaseUserManager
-from src.core.schemas import AnswerCreateSchema, TelegramFileCreateSchema
+from src.bot.managers.base import BaseUserManager, ensure_telegram_user_decorator
+from src.core.enums import UserRoleEnum
+from src.core.schemas import (
+    AnswerCreateSchema,
+    GroupSchema,
+    StudentCreateSchema,
+    TelegramFileCreateSchema,
+)
 from src.db.services import StudentsService
 from src.db.use_cases.assignments import AssignmentsUseCase
+
+if TYPE_CHECKING:
+    from src.bot.session import UserSession
 
 
 class StudentManager(BaseUserManager):
@@ -19,21 +26,43 @@ class StudentManager(BaseUserManager):
 
     def __init__(
         self,
-        message: Optional[Message] = None,
-        callback_query: Optional[CallbackQuery] = None,
+        user_session: "UserSession",
     ) -> None:
-        super().__init__(message=message, callback_query=callback_query)
+        super().__init__(user_session=user_session)
         self.students = StudentsService()
         self.assignments = AssignmentsUseCase()
 
+    @ensure_telegram_user_decorator
+    async def initialize(self, group_id: Optional[int] = None) -> None:
+        """
+        Инициализируем студента, создаем запись, сохраняем роль
+        """
+        student = await self.students.get_by_user_id(self.session.user_id)
+        if not student:
+            student = await self.students.create(
+                StudentCreateSchema(user_id=self.session.user_id, group_id=group_id)
+            )
+        elif group_id and student.group_id != group_id:
+            await self.students.set_group(student, group_id=group_id)
+        await self.session.set_role(UserRoleEnum.STUDENT)
+
+    @ensure_telegram_user_decorator
+    async def get_group(self) -> Optional[GroupSchema]:
+        """
+        Получить группу студента по telegram user_id.
+        Возвращает group_id.
+        """
+        return await self.students.get_group_by_user_id(self.session.user_id)
+
+    @ensure_telegram_user_decorator
     async def set_group(self, group_id: int) -> int:
         """
         Поменять группу студента по telegram user_id.
         Возвращает количество обновлённых строк (0/1).
         """
-        await self.ensure_telegram_user()
         return await self.students.set_group_by_user_id(self.session.user_id, group_id)
 
+    @ensure_telegram_user_decorator
     async def submit_answer(
         self,
         *,
@@ -45,7 +74,6 @@ class StudentManager(BaseUserManager):
         """
         Создать ответ от текущего пользователя. Требует, чтобы студент уже существовал в БД.
         """
-        await self.ensure_telegram_user()
         student = await self.students.get_by_user_id(self.session.user_id)
         if not student:
             raise ValueError(

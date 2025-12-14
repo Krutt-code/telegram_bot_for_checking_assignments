@@ -69,9 +69,10 @@ class StudentsModel(Base):
         unique=True,
         index=True,
     )
-    group_id: Mapped[int] = mapped_column(
-        ForeignKey(GroupsModel.group_id, ondelete="CASCADE", onupdate="CASCADE"),
+    group_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey(GroupsModel.group_id, ondelete="SET NULL", onupdate="SET NULL"),
         index=True,
+        nullable=True,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,

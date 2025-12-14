@@ -46,8 +46,9 @@ class StudentsService:
     @classmethod
     @with_session
     async def update(cls, schema: StudentSchema, session: AsyncSession = None) -> None:
-        return await cls.students_repository.update_by_id(
-            schema.student_id, schema, session=session
+        data = schema.model_dump(exclude_unset=True, exclude={"user", "group"})
+        return await cls.students_repository.update_values_by_id(
+            schema.student_id, data, session=session
         )
 
     @classmethod
@@ -62,9 +63,8 @@ class StudentsService:
     async def set_group(
         cls, student: StudentSchema, group_id: int, session: AsyncSession = None
     ) -> None:
-        student.group_id = group_id
-        return await cls.students_repository.update_by_id(
-            student.student_id, student, session=session
+        return await cls.students_repository.update_values_by_id(
+            student.student_id, {"group_id": group_id}, session=session
         )
 
     @classmethod

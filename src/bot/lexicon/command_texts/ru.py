@@ -1,0 +1,22 @@
+from src.core.enums import CommandsEnum
+
+COMMAND_DESCRIPTIONS_RU: dict[CommandsEnum, str] = {
+    CommandsEnum.START: "Начать",
+    CommandsEnum.HELP: "Помощь",
+    CommandsEnum.ROLE: "Выбрать роль",
+    CommandsEnum.FULL_NAME_PANEL: "ФИО",
+    CommandsEnum.SET_FULL_NAME: "Установить ФИО",
+    CommandsEnum.STUDENT_ROLE: "Студент",
+    CommandsEnum.STUDENT_HOMEWORKS: "Посмотреть задания",
+    CommandsEnum.STUDENT_ANSWERS: "Посмотреть ответы",
+    CommandsEnum.STUDENT_GROUP: "Текущая группа",
+    CommandsEnum.TEACHER_ROLE: "Преподаватель",
+    CommandsEnum.TEACHER_HOMEWORKS: "Посмотреть задания",
+    CommandsEnum.TEACHER_GROUPS: "Посмотреть группы",
+    CommandsEnum.ADMIN_PANEL: "Админ-панель",
+    CommandsEnum.ADMIN_STUDENTS: "Студенты",
+    CommandsEnum.ADMIN_GROUPS: "Группы",
+    CommandsEnum.ADMIN_TEACHERS: "Преподаватели",
+    CommandsEnum.BACK: "Назад",
+    CommandsEnum.CANCEL: "Отмена",
+}

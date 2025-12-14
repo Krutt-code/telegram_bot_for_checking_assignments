@@ -44,8 +44,18 @@ class RedisClient:
         value = await self.redis.get(key)
         return value.decode() if value is not None else default
 
-    async def set(self, key: str, value: str, expire: int = 0) -> None:
-        await self.redis.set(key, value, ex=expire)
+    async def set(self, key: str, value: str, expire: Optional[int] = None) -> None:
+        """
+        Ставит ключ в Redis. Если expire не указан, TTL не ставится.
+        Redis не принимает ex=0, поэтому передаём параметр только когда он положительный.
+        """
+        kwargs = {}
+        if expire is not None:
+            if expire <= 0:
+                # Защита от некорректного TTL, чтобы не падать с invalid expire time
+                return
+            kwargs["ex"] = expire
+        await self.redis.set(key, value, **kwargs)
 
     async def scan_keys(self, pattern: str) -> list:
         keys = []
@@ -61,7 +71,7 @@ class RedisClient:
 
 """ Тесты
 
-async with RedisClient(settings.redis_url) as redis_client:
+async with RedisClient(settings.actual_redis_url) as redis_client:
     print(await redis_client.get("test"))
     await redis_client.set("test", "test, тест, 1234", 10)
     print(await redis_client.get("test"))

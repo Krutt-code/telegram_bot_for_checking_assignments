@@ -1,0 +1,3 @@
+from .ru import COMMAND_DESCRIPTIONS_RU
+
+__all__ = ["COMMAND_DESCRIPTIONS_RU"]
