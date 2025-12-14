@@ -11,6 +11,8 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.STUDENT_ROLE],
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_ROLE],
         ],
+    ],
+    ReplyKeyboardTypeEnum.GENERAL_SETTINGS: [
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.FULL_NAME_PANEL]],
     ],
     ReplyKeyboardTypeEnum.ADMIN: [
@@ -18,7 +20,6 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.STUDENT_ROLE],
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_ROLE],
         ],
-        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.FULL_NAME_PANEL]],
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_PANEL]],
     ],
     ReplyKeyboardTypeEnum.FULL_NAME_PANEL: [

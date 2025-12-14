@@ -58,6 +58,7 @@ class CommandsEnum(StrEnum):
 
     START = "start"
     ROLE = "role"
+    GENERAL_SETTINGS = "general_settings"
     HELP = "help"
 
     FULL_NAME_PANEL = "full_name_panel"
@@ -94,6 +95,7 @@ class ReplyKeyboardTypeEnum(StrEnum):
     """
 
     ROLE = "role"
+    GENERAL_SETTINGS = "general_settings"
     FULL_NAME_PANEL = "full_name_panel"
     ADMIN = "admin"
     ADMIN_PANEL = "admin_panel"

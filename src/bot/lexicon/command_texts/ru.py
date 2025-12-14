@@ -4,6 +4,7 @@ COMMAND_DESCRIPTIONS_RU: dict[CommandsEnum, str] = {
     CommandsEnum.START: "Начать",
     CommandsEnum.HELP: "Помощь",
     CommandsEnum.ROLE: "Выбрать роль",
+    CommandsEnum.GENERAL_SETTINGS: "Общие настройки",
     CommandsEnum.FULL_NAME_PANEL: "ФИО",
     CommandsEnum.SET_FULL_NAME: "Установить ФИО",
     CommandsEnum.STUDENT_ROLE: "Студент",
