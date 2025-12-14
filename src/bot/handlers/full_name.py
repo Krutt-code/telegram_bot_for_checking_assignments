@@ -5,6 +5,7 @@ from aiogram.types import Message
 
 from src.bot.filters.command import CommandFilter
 from src.bot.lexicon.texts import TextsRU
+from src.bot.navigation import NavigationHelper, NavigationManager
 from src.bot.session import UserSession
 from src.core.enums import CommandsEnum, ReplyKeyboardTypeEnum
 
@@ -16,60 +17,89 @@ class FullNameStates(StatesGroup):
 
 
 @full_name_router.message(CommandFilter(CommandsEnum.FULL_NAME_PANEL))
-async def full_name_panel(
-    message: Message, state: FSMContext, session: UserSession
-) -> None:
+async def full_name_panel(_: Message, state: FSMContext, session: UserSession) -> None:
     """
     Первый шаг сценария: просим ввести ФИО и ставим состояние в Redis FSM.
+    Добавляет кнопку "Назад" для возврата в общие настройки.
     """
+    # Запоминаем "куда вернуться" при отмене сценария.
+    nav_manager = NavigationManager(state)
+    await nav_manager.set_cancel_target(await nav_manager.get_previous())
+
+    # Регистрируем шаг навигации (пришли из general_settings)
+    await NavigationHelper.register_navigation_step(
+        state,
+        CommandsEnum.FULL_NAME_PANEL,
+        ReplyKeyboardTypeEnum.FULL_NAME_PANEL,
+        TextsRU.SELECT_ACTION,
+    )
+
     user_manager = session.user_manager()
     full_name = await user_manager.get_real_full_name()
     if not full_name:
         await state.set_state(FullNameStates.waiting_for_full_name)
-        await session.answer(TextsRU.FULL_NAME_ENTER)
+        # При ожидании ввода ФИО добавляем кнопку "Отмена"
+        await session.answer(TextsRU.FULL_NAME_ENTER, include_cancel=True)
         return
     await state.update_data(full_name=full_name)
     await session.answer(TextsRU.FULL_NAME_NOW.format(full_name=full_name))
+    # Добавляем кнопку "Назад" к клавиатуре FULL_NAME_PANEL
     await session.answer(
-        TextsRU.SELECT_ACTION, reply_markup=ReplyKeyboardTypeEnum.FULL_NAME_PANEL
+        TextsRU.SELECT_ACTION,
+        reply_markup=ReplyKeyboardTypeEnum.FULL_NAME_PANEL,
+        include_back=True,
     )
 
 
 @full_name_router.message(CommandFilter(CommandsEnum.SET_FULL_NAME))
 async def set_full_name(_: Message, state: FSMContext, session: UserSession) -> None:
+    """
+    Обработчик команды "Установить ФИО".
+    Запрашивает ввод ФИО и добавляет кнопку "Отмена".
+    """
     await state.set_state(FullNameStates.waiting_for_full_name)
-    await session.answer(TextsRU.FULL_NAME_ENTER)
-
-
-@full_name_router.message(
-    CommandFilter(CommandsEnum.CANCEL), FullNameStates.waiting_for_full_name
-)
-async def cancel_full_name(_: Message, state: FSMContext, session: UserSession) -> None:
-    await state.clear()
-    message_ids = await session.answer(
-        TextsRU.CANCEL, reply_markup=ReplyKeyboardTypeEnum.ROLE
-    )
-    await session.delete_messages(message_ids)
+    await session.answer(TextsRU.FULL_NAME_ENTER, include_cancel=True)
 
 
 @full_name_router.message(FullNameStates.waiting_for_full_name)
 async def save_full_name(
     message: Message, state: FSMContext, session: UserSession
 ) -> None:
+    """
+    Обработчик сохранения ФИО.
+    После успешного сохранения возвращает в меню общих настроек.
+    """
     full_name = message.text
     # Проверяем что в имене хотя бы 2 слова, так как фио могут быть очень разнообразными
     if not (full_name and len(full_name.split()) >= 2):
         await session.answer(TextsRU.FULL_NAME_ERROR)
         await session.answer(TextsRU.TRY_AGAIN)
         return
+    nav_manager = NavigationManager(state)
     old_full_name = await state.get_value("full_name", None)
+    await nav_manager.clear_state_and_data_keep_navigation()
+
     if old_full_name == full_name:
         await session.answer(TextsRU.FULL_NAME_NOT_CHANGED)
-        await state.clear()
-        return
-    user_manager = session.user_manager()
-    await user_manager.set_real_full_name(full_name)
-    await session.answer(
-        TextsRU.FULL_NAME_SUCCESS, reply_markup=ReplyKeyboardTypeEnum.ROLE
+    else:
+        # Сохраняем новое ФИО
+        user_manager = session.user_manager()
+        await user_manager.set_real_full_name(full_name)
+        await session.answer(TextsRU.FULL_NAME_SUCCESS)
+
+    # Возвращаемся в общие настройки
+    previous_step = await nav_manager.pop_previous(
+        default_keyboard=ReplyKeyboardTypeEnum.GENERAL_SETTINGS,
+        default_text=TextsRU.SELECT_ACTION,
     )
-    await state.clear()
+
+    if previous_step:
+        await session.answer(
+            previous_step.text,
+            reply_markup=previous_step.keyboard,
+        )
+    else:
+        # Если истории нет, возвращаемся в общие настройки
+        await session.answer(
+            TextsRU.SELECT_ACTION, reply_markup=ReplyKeyboardTypeEnum.GENERAL_SETTINGS
+        )

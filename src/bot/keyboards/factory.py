@@ -32,14 +32,40 @@ def make_inline_markup(layout: List[List[Dict[str, str]]]) -> InlineKeyboardMark
 
 class KeyboardFactory:
     @staticmethod
+    def get_navigation_only(
+        *, include_back: bool = False, include_cancel: bool = False
+    ) -> ReplyKeyboardMarkup:
+        layout: List[List[str]] = []
+        if include_back:
+            layout.append([COMMAND_DESCRIPTIONS_RU[CommandsEnum.BACK]])
+        if include_cancel:
+            layout.append([COMMAND_DESCRIPTIONS_RU[CommandsEnum.CANCEL]])
+        if not layout:
+            raise ValueError("Невозможно создать навигационную клавиатуру без кнопок")
+        return make_reply_markup(layout)
+
+    @staticmethod
     def get_reply(
-        name: ReplyKeyboardTypeEnum, *, include_back: bool = False
+        name: ReplyKeyboardTypeEnum,
+        *,
+        include_back: bool = False,
+        include_cancel: bool = False,
     ) -> ReplyKeyboardMarkup:
         layout = REPLY_KEYBOARDS.get(name)
         if not layout:
             raise ValueError(f"Неизвестный тип reply-клавиатуры: {name}")
+
+        # Создаем копию layout, чтобы не модифицировать исходный
+        layout = [row[:] for row in layout]
+
+        # Добавляем кнопку "Назад" если нужно
         if include_back:
             layout.append([COMMAND_DESCRIPTIONS_RU[CommandsEnum.BACK]])
+
+        # Добавляем кнопку "Отмена" если нужно
+        if include_cancel:
+            layout.append([COMMAND_DESCRIPTIONS_RU[CommandsEnum.CANCEL]])
+
         return make_reply_markup(layout)
 
     @staticmethod

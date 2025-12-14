@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.core.enums import AnswersStatusEnum
+from src.core.enums import AnswersStatusEnum, CommandsEnum, ReplyKeyboardTypeEnum
 
 # region: Схемы таблиц базы данных
 
@@ -276,6 +276,21 @@ class AdminSchema(BaseModel):
 
 # endregion: Схемы таблиц базы данных
 # region: Смешанные схемы данных
+
+
+# --- Навигация бота ---
+
+
+class NavigationStepSchema(BaseModel):
+    """
+    Шаг навигации в боте.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    command: CommandsEnum
+    keyboard: Optional[ReplyKeyboardTypeEnum] = None
+    text: Optional[str] = None
 
 
 # endregion: Смешанные схемы данных

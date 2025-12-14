@@ -24,7 +24,6 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
     ],
     ReplyKeyboardTypeEnum.FULL_NAME_PANEL: [
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.SET_FULL_NAME]],
-        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.CANCEL]],
     ],
     ReplyKeyboardTypeEnum.ADMIN_PANEL: [
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_STUDENTS]],

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Iterable, List, Optional, Union
 
-# from aiogram.types.message import Message as SendMessage
-from aiogram.methods import SendMessage
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardMarkup
 
 from src.bot.keyboards.factory import KeyboardFactory
@@ -97,13 +95,29 @@ class UserSession:
             Union[ReplyKeyboardMarkup, ReplyKeyboardTypeEnum]
         ] = None,
         reply_to_message_id: Optional[int] = None,
+        include_back: bool = False,
+        include_cancel: bool = False,
     ) -> List[int]:
         """
         Отправляет сообщение и возвращает список id сообщений.
+
+        Args:
+            text: Текст сообщения
+            reply_markup: Клавиатура для отображения
+            reply_to_message_id: ID сообщения для ответа
+            include_back: Добавить кнопку "Назад"
+            include_cancel: Добавить кнопку "Отмена"
         """
         if isinstance(reply_markup, ReplyKeyboardTypeEnum):
             self.logger.debug(f"Отправка reply-клавиатуры: {reply_markup}")
-            reply_markup = KeyboardFactory.get_reply(reply_markup)
+            reply_markup = KeyboardFactory.get_reply(
+                reply_markup, include_back=include_back, include_cancel=include_cancel
+            )
+        elif reply_markup is None and (include_back or include_cancel):
+            reply_markup = KeyboardFactory.get_navigation_only(
+                include_back=include_back,
+                include_cancel=include_cancel,
+            )
         parts = split_telegram_html_message(text)
         message_ids = []
         for part in parts:
@@ -137,5 +151,4 @@ class UserSession:
             text=callback_query.message.text,
         )
         msg._bot = callback_query.bot
-        return msg
         return msg
