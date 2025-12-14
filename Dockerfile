@@ -1,25 +1,26 @@
-# Используем официальный образ Python
 FROM python:3.13-slim
 
-# Установка зависимостей системы
-RUN apt-get update && apt-get install -y \
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1
+
+# системные пакеты (минимально необходимые для установки зависимостей)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка рабочей директории
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Устанавливаем зависимости
-COPY poetry.lock .
-RUN pip install --no-cache-dir poetry
-RUN poetry install --no-root
+# зависимости (слой кеша)
+COPY pyproject.toml poetry.lock ./
+RUN pip install --no-cache-dir poetry && poetry install --no-ansi --no-root
 
+# код
 COPY ./src ./src
-COPY ./main.py .
+COPY ./run.py ./run.py
 
-# Открываем порт
-EXPOSE 8000
+RUN mkdir -p /app/logs
 
-# Указываем команду запуска бота
-CMD ["python", "-m", "main"]
+CMD ["python", "run.py"]

@@ -1,38 +1,59 @@
-# Run
-## docker compose up --build
-
-# Stop
-## docker compose down
-
-# Для выключения старых образов redis
-## sudo lsof -i :6379
-## sudo systemctl stop redis
-
-## docker ps -a | grep redis
-## docker rm -f redis
-
-# Сбросить redis
-## docker compose exec redis redis-cli FLUSHALL
+## Быстрый старт (Docker Compose)
+#
+# 1) Создайте `.env` (можно на базе `.env.example`) и заполните BOT_TOKEN и пароли.
+# 2) Запуск:
+#    docker compose up --build
+# 3) Остановка:
+#    docker compose down
+#
+# Инициализация MySQL:
+# - SQL-файлы смонтированы в `/docker-entrypoint-initdb.d/` и выполняются ТОЛЬКО при первом
+#   старте на пустом томе `mysql_data`.
+# - Если том уже создан и нужно переинициализировать БД:
+#   docker compose down -v
+#   docker compose up --build
+#
+# Redis:
+# - Пароль задаётся через `REDIS_PASSWORD` (см. `.env`), используется в `--requirepass`.
+# - Сбросить данные (ОСТОРОЖНО):
+#   docker compose exec redis redis-cli -a "$REDIS_PASSWORD" FLUSHALL
 
 services:
   redis:
-    # для локального запуска redis-server --appendonly yes --save 60 1
+    # для локального запуска 
+    # -   sudo systemctl stop redis
+    # -   redis-server --appendonly yes --save 60 1
     image: redis:7
     container_name: redis
     env_file:
       - .env
-    command: >
-      redis-server
-        --appendonly yes
-        --save 60 1
-        --requirepass :${REDIS_PASSWORD:-mypassword}
-        --rename-command FLUSHALL ""
-        --rename-command FLUSHDB  ""
-        --rename-command CONFIG   ""
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "60"
+      - "1"
+      - --requirepass
+      - "${REDIS_PASSWORD:-mypassword}"
+      - --rename-command
+      - FLUSHALL
+      - ""
+      - --rename-command
+      - FLUSHDB
+      - ""
+      - --rename-command
+      - CONFIG
+      - ""
     volumes:
       - redis-data:/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"${REDIS_PASSWORD:-mypassword}\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     restart: unless-stopped
 
   database:
@@ -40,36 +61,58 @@ services:
     container_name: database
     ports:
       - "3311:3306"
-    entrypoint: 
-      - MYSQL_USER=root
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=bot
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bot}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./src/db/bot_structure.sql:/docker-entrypoint-initdb.d/01_bot_structure.sql:ro
+      - ./src/db/bot_data.sql:/docker-entrypoint-initdb.d/02_bot_data.sql:ro
     networks:
       - backend
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p\"${MYSQL_ROOT_PASSWORD:-root}\" --silent",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
     restart: unless-stopped
 
   bot:
     container_name: bot
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
-      - ./log:/usr/src/app/logs
-    entrypoint: 
-      - REDIS_URL=redis://redis:6379/0
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=bot
-      - MYSQL_HOST=database
-    expose:
-      - "8000"
+      - ./logs:/app/logs
+    environment:
+      # Redis предпочтительно задавать компонентами
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_DB: ${REDIS_DB:-0}
+      REDIS_USER: ${REDIS_USER:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-mypassword}
+
+      # MySQL (если MYSQL_URL пустой — будут использованы компоненты)
+      MYSQL_URL: ${MYSQL_URL:-}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bot}
+      MYSQL_HOST: ${MYSQL_HOST:-database}
     networks:
       - backend
     depends_on:
-      - redis
-      - database
+      redis:
+        condition: service_healthy
+      database:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
