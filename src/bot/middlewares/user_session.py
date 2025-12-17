@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message, Update
 
 from src.bot.session import UserSession
@@ -47,10 +48,16 @@ class UserSessionMiddleware(BaseMiddleware):
                 admin_storage = ctx.admin_storage
                 role_storage = ctx.role_storage
 
-            data["session"] = UserSession(
+            session_obj = UserSession(
                 obj,
                 users_client=users_client,
                 admin_storage=admin_storage,
                 role_storage=role_storage,
+                state=data.get("state"),
             )
+            # На всякий случай: если aiogram не положил FSMContext в data (редко),
+            # то позже хендлеры могут привязать его вручную через session.bind_state(...).
+            if isinstance(data.get("state"), FSMContext):
+                session_obj.bind_state(data.get("state"))
+            data["session"] = session_obj
         return await handler(event, data)

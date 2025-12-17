@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+from src.bot.keyboards.paginated_list import paginated_list_inline
 from src.bot.lexicon.command_texts import COMMAND_DESCRIPTIONS_RU
 from src.core.enums import CommandsEnum, InlineKeyboardTypeEnum, ReplyKeyboardTypeEnum
 
@@ -44,9 +45,27 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_HOMEWORKS],
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUPS],
         ],
-    ],  # TODO: Реализовать меню заданий и групп преподователя
+    ],
+    ReplyKeyboardTypeEnum.TEACHER_GROUPS: [
+        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_CREATE]],
+    ],
+    ReplyKeyboardTypeEnum.TEACHER_GROUP_VIEW: [
+        [
+            COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_EDIT],
+            COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_DELETE],
+        ],
+        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_GET_LINK]],
+    ],
+    # TODO: Реализовать меню заданий и групп преподователя
 }
 
 INLINE_KEYBOARDS: Dict[
     InlineKeyboardTypeEnum, Union[List[List[Dict[str, str]]], callable]
-] = {}
+] = {
+    InlineKeyboardTypeEnum.TEACHER_GROUPS_REVIEW: (
+        lambda data: paginated_list_inline(data)
+    ),
+    InlineKeyboardTypeEnum.TEACHER_GROUP_STUDENTS_REVIEW: (
+        lambda data: paginated_list_inline(data)
+    ),
+}

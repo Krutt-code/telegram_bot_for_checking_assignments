@@ -79,6 +79,7 @@ class CommandsEnum(StrEnum):
     TEACHER_GROUP_VIEW = "teacher_group_view"
     TEACHER_GROUP_ADD_STUDENT = "teacher_group_add_student"
     TEACHER_GROUP_REMOVE_STUDENT = "teacher_group_remove_student"
+    TEACHER_GROUP_GET_LINK = "teacher_group_get_link"
 
     ADMIN_PANEL = "admin_panel"
     ADMIN_STUDENTS = "admin_students"
@@ -110,6 +111,8 @@ class ReplyKeyboardTypeEnum(StrEnum):
     TEACHER = "teacher"
     TEACHER_HOMEWORKS = "teacher_homeworks"
     TEACHER_GROUPS = "teacher_groups"
+    TEACHER_GROUP_CREATE = "teacher_group_create"
+    TEACHER_GROUP_VIEW = "teacher_group_view"
 
 
 class InlineKeyboardTypeEnum(StrEnum):
@@ -117,4 +120,5 @@ class InlineKeyboardTypeEnum(StrEnum):
     Типы готовых inline-клавиатур
     """
 
-    pass
+    TEACHER_GROUPS_REVIEW = "teacher_groups_review"
+    TEACHER_GROUP_STUDENTS_REVIEW = "teacher_group_students_review"

@@ -8,5 +8,6 @@ Use-cases / orchestrators (внутри слоя db).
 """
 
 from .assignments import AssignmentsUseCase
+from .teacher_groups import TeacherGroupsUseCase
 
-__all__ = ["AssignmentsUseCase"]
+__all__ = ["AssignmentsUseCase", "TeacherGroupsUseCase"]

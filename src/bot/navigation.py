@@ -7,15 +7,18 @@
 
 from __future__ import annotations
 
-from typing import List, Optional, Sequence
+from typing import TYPE_CHECKING, List, Optional, Sequence
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from src.bot.lexicon.texts import TextsRU
-from src.bot.session import UserSession
 from src.core.enums import CommandsEnum, ReplyKeyboardTypeEnum
+from src.core.logger import get_class_logger
 from src.core.schemas import NavigationStepSchema
+
+if TYPE_CHECKING:
+    from src.bot.session import UserSession
 
 # Команды, которые являются точками входа и очищают историю навигации
 ENTRY_POINT_COMMANDS = {
@@ -40,6 +43,7 @@ class NavigationManager:
 
     def __init__(self, state: FSMContext):
         self.state = state
+        self.logger = get_class_logger(self)
 
     async def _set_history(self, history: Sequence[NavigationStepSchema]) -> None:
         await self.state.update_data(
@@ -94,6 +98,7 @@ class NavigationManager:
             text: Текст сообщения (опционально)
         """
         history = await self.get_history()
+        self.logger.debug(f"Добавляем шаг в историю навигации: {command}")
         history.append(
             NavigationStepSchema(command=command, keyboard=keyboard, text=text)
         )
@@ -107,6 +112,7 @@ class NavigationManager:
             Словарь с данными предыдущего шага или None, если история пуста
         """
         history = await self.get_history()
+        self.logger.debug(f"Удаляем последний шаг из истории: {history[-1]}")
         if not history:
             return None
 
@@ -130,6 +136,7 @@ class NavigationManager:
         await self.state.clear()
         await self._set_history(history)
         await self.set_cancel_target(cancel_target)
+        self.logger.debug(f"Очищаем FSM и сохраняем историю навигации: {history}")
 
     async def clear_state_and_data_keep_navigation(self) -> None:
         """
@@ -143,6 +150,7 @@ class NavigationManager:
         preserved = {k: v for k, v in data.items() if k in self._NAV_KEYS}
         await self.state.set_state(None)
         await self.state.set_data(preserved)
+        self.logger.debug(f"Очищаем state и сохраняем данные навигации: {preserved}")
 
     async def get_previous(self) -> Optional[NavigationStepSchema]:
         """
@@ -251,14 +259,13 @@ class NavigationHelper:
         # Проверяем, не является ли команда точкой входа
         if command in ENTRY_POINT_COMMANDS:
             await NavigationHelper.register_entry_point(state)
-            return
 
         nav_manager = NavigationManager(state)
         await nav_manager.push(command, keyboard, text)
 
     @staticmethod
     async def go_back(
-        message: Message, state: FSMContext, session: UserSession
+        message: Message, state: FSMContext, session: "UserSession"
     ) -> bool:
         """
         Вернуться на предыдущий шаг.
@@ -293,7 +300,7 @@ class NavigationHelper:
 
 
 async def handle_back_command(
-    message: Message, state: FSMContext, session: UserSession
+    message: Message, state: FSMContext, session: "UserSession"
 ) -> None:
     """
     Обработчик команды "Назад".

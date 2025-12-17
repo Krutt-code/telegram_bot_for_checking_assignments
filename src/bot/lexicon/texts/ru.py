@@ -15,6 +15,7 @@ class TextsRU(StrEnum):
     HELLO_TEACHER = (
         "Это меню преподавателя. Здесь вы можете посмотреть свои задания и группы."
     )
+    HELP = "Пока нет"
 
     SELECT_ROLE = "Выберите свою роль, нажав на соответствующую кнопку."
     SELECT_ACTION = "Выберите действие, нажав на соответствующую кнопку."
@@ -30,10 +31,6 @@ class TextsRU(StrEnum):
     FULL_NAME_NOT_CHANGED = "ФИО не изменилось."
     FULL_NAME_REQUIRED = "Для продолжения работы заполните ФИО."
 
-    # >>>>> HELP >>>>>
-
-    # <<<<< HELP <<<<<
-
     HELLO_ADMIN_PANEL = "Добро пожаловать в админ-панель"
 
     BACK_OK = "⬅️ Возвращаюсь назад"
@@ -42,3 +39,73 @@ class TextsRU(StrEnum):
     CANCEL = "Отмена"
 
     TRY_AGAIN = "Попробуйте еще раз"
+
+    # --- Teacher: groups ---
+    TEACHER_GROUPS_TITLE = "<b>Ваши группы</b>"
+    TEACHER_GROUPS_EMPTY = "<b>Ваши группы</b>\n\nПока нет закреплённых за вами групп."
+    TEACHER_NOT_FOUND = "Не удалось найти запись преподавателя. Попробуйте заново выбрать роль через /role."
+    TEACHER_GROUP_CREATE_TITLE = (
+        "Пожалуйста, введите название новой группы."
+        "\n\nЭто может быть как учебная группа, так и группа для самостоятельной работы."
+    )
+    TEACHER_GROUP_CREATE_INVALID_NAME = (
+        "❌ Некорректное название группы. Введите от 1 до 255 символов."
+    )
+    TEACHER_GROUP_CREATE_DUPLICATE_NAME = (
+        "❌ У вас уже есть группа с таким названием. Введите другое."
+    )
+    TEACHER_GROUP_CREATE_FAILED = "❌ Не удалось создать группу. Попробуйте ещё раз."
+    TEACHER_GROUP_CREATE_SUCCESS = "✅ Группа «{name}» создана и привязана к вам."
+
+    # --- Teacher: group view / students ---
+    TEACHER_GROUP_STUDENTS_TITLE = (
+        "<b>Студенты группы</b>\n\n{group_name}\n\n{students_list}"
+    )
+    TEACHER_GROUP_STUDENTS_EMPTY = "В этой группе пока нет студентов."
+    TEACHER_GROUP_OPEN_FAILED = (
+        "❌ Не удалось открыть группу. Возможно, она была удалена."
+    )
+
+    # --- Teacher: group edit ---
+    TEACHER_GROUP_EDIT_PROMPT = (
+        'Текущее название: "{group_name}"\n\nВведите новое название группы'
+    )
+    TEACHER_GROUP_EDIT_SUCCESS = "✅ Название группы обновлено."
+    TEACHER_GROUP_EDIT_DUPLICATE_NAME = (
+        "❌ У вас уже есть группа с таким названием. Введите другое."
+    )
+    TEACHER_GROUP_EDIT_INVALID_NAME = (
+        "❌ Некорректное название группы. Введите от 1 до 255 символов."
+    )
+
+    # --- Teacher: group delete ---
+    TEACHER_GROUP_DELETE_CONFIRM = (
+        'Вы уверены что хотите удалить группу "{group_name}"?\n\n'
+        "Для удаления пришлите название группы"
+    )
+    TEACHER_GROUP_DELETE_SUCCESS = "✅ Группа удалена."
+    TEACHER_GROUP_DELETE_NAME_MISMATCH = (
+        "❌ Название не совпало. Для удаления пришлите точное название группы."
+    )
+
+    # --- Teacher: remove student from group ---
+    TEACHER_GROUP_STUDENT_REMOVE_CONFIRM_ALERT = (
+        "Удалить студента из группы?\n\nНажмите на кнопку ещё раз, чтобы подтвердить."
+    )
+    TEACHER_GROUP_STUDENT_REMOVE_SUCCESS_ALERT = "Студент удалён из группы."
+    TEACHER_GROUP_STUDENT_REMOVE_FAILED_ALERT = (
+        "Не удалось удалить студента (возможно, он уже не в этой группе)."
+    )
+
+    # --- Student: join group by invite ---
+    STUDENT_JOIN_GROUP_INVALID = "❌ Ссылка недействительна или группа не найдена."
+    STUDENT_JOIN_GROUP_SUCCESS = (
+        '✅ Вы добавлены в группу "{group_name}"\n' "Преподаватель: {teacher_full_name}"
+    )
+
+    # --- Teacher: get link ---
+    TEACHER_GROUP_GET_LINK = (
+        "Ссылка для добавления студентов в группу.\n\n"
+        "Нажмите кнопку ниже, чтобы скопировать."
+    )
+    TEACHER_GROUP_GET_LINK_BUTTON = "Скопировать ссылку"

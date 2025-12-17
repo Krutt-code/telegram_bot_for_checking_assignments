@@ -1,19 +1,16 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 
 from src.bot.filters.command import CommandFilter
 from src.bot.lexicon.texts import TextsRU
 from src.bot.navigation import NavigationHelper, NavigationManager
 from src.bot.session import UserSession
+from src.bot.utils.group_invite import perform_join_group
 from src.core.enums import CommandsEnum, ReplyKeyboardTypeEnum
+from src.core.fsm_states import FullNameStates
 
 full_name_router = Router()
-
-
-class FullNameStates(StatesGroup):
-    waiting_for_full_name = State()
 
 
 @full_name_router.message(CommandFilter(CommandsEnum.FULL_NAME_PANEL))
@@ -38,16 +35,13 @@ async def full_name_panel(_: Message, state: FSMContext, session: UserSession) -
     full_name = await user_manager.get_real_full_name()
     if not full_name:
         await state.set_state(FullNameStates.waiting_for_full_name)
-        # При ожидании ввода ФИО добавляем кнопку "Отмена"
-        await session.answer(TextsRU.FULL_NAME_ENTER, include_cancel=True)
+        await session.answer(TextsRU.FULL_NAME_ENTER)
         return
     await state.update_data(full_name=full_name)
     await session.answer(TextsRU.FULL_NAME_NOW.format(full_name=full_name))
-    # Добавляем кнопку "Назад" к клавиатуре FULL_NAME_PANEL
     await session.answer(
         TextsRU.SELECT_ACTION,
         reply_markup=ReplyKeyboardTypeEnum.FULL_NAME_PANEL,
-        include_back=True,
     )
 
 
@@ -58,7 +52,7 @@ async def set_full_name(_: Message, state: FSMContext, session: UserSession) -> 
     Запрашивает ввод ФИО и добавляет кнопку "Отмена".
     """
     await state.set_state(FullNameStates.waiting_for_full_name)
-    await session.answer(TextsRU.FULL_NAME_ENTER, include_cancel=True)
+    await session.answer(TextsRU.FULL_NAME_ENTER)
 
 
 @full_name_router.message(FullNameStates.waiting_for_full_name)
@@ -75,6 +69,8 @@ async def save_full_name(
         await session.answer(TextsRU.FULL_NAME_ERROR)
         await session.answer(TextsRU.TRY_AGAIN)
         return
+
+    pending_join_group_id = await state.get_value("pending_join_group_id", None)
     nav_manager = NavigationManager(state)
     old_full_name = await state.get_value("full_name", None)
     await nav_manager.clear_state_and_data_keep_navigation()
@@ -86,6 +82,11 @@ async def save_full_name(
         user_manager = session.user_manager()
         await user_manager.set_real_full_name(full_name)
         await session.answer(TextsRU.FULL_NAME_SUCCESS)
+
+    # Если это было заполнение ФИО по ссылке-приглашению — сразу добавляем в группу
+    if pending_join_group_id:
+        await perform_join_group(session=session, group_id=int(pending_join_group_id))
+        return
 
     # Возвращаемся в общие настройки
     previous_step = await nav_manager.pop_previous(

@@ -4,6 +4,7 @@
 
 from .answer_files import AnswerFilesService
 from .answers import AnswersService
+from .assigned_groups import AssignedGroupsService
 from .homeworks import HomeworksService
 from .students import StudentsService
 from .teachers import TeachersService
@@ -14,6 +15,7 @@ __all__ = [
     "AnswerFilesService",
     "AnswersService",
     "HomeworksService",
+    "AssignedGroupsService",
     "StudentsService",
     "TeachersService",
     "TelegramFilesService",

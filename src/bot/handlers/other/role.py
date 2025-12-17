@@ -23,7 +23,12 @@ async def student_role_handler(
     Точка входа - очищает историю навигации.
     """
     # Очищаем историю навигации (точка входа)
-    await NavigationHelper.register_entry_point(state)
+    await NavigationHelper.register_navigation_step(
+        state,
+        CommandsEnum.STUDENT_ROLE,
+        ReplyKeyboardTypeEnum.STUDENT,
+        TextsRU.SELECT_ACTION,
+    )
 
     await session.student_manager().initialize()
     await session.answer(
@@ -40,9 +45,15 @@ async def teacher_role_handler(
     Точка входа - очищает историю навигации.
     """
     # Очищаем историю навигации (точка входа)
-    await NavigationHelper.register_entry_point(state)
+    await NavigationHelper.register_navigation_step(
+        state,
+        CommandsEnum.TEACHER_ROLE,
+        ReplyKeyboardTypeEnum.TEACHER,
+        TextsRU.SELECT_ACTION,
+    )
 
     await session.teacher_manager().initialize()
+
     await session.answer(
         TextsRU.HELLO_TEACHER, reply_markup=ReplyKeyboardTypeEnum.TEACHER
     )

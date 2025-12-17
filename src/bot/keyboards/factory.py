@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from aiogram.types import (
     InlineKeyboardButton,
@@ -46,7 +46,7 @@ class KeyboardFactory:
 
     @staticmethod
     def get_reply(
-        name: ReplyKeyboardTypeEnum,
+        name: Optional[ReplyKeyboardTypeEnum],
         *,
         include_back: bool = False,
         include_cancel: bool = False,
@@ -65,6 +65,9 @@ class KeyboardFactory:
         # Добавляем кнопку "Отмена" если нужно
         if include_cancel:
             layout.append([COMMAND_DESCRIPTIONS_RU[CommandsEnum.CANCEL]])
+
+        if not layout:
+            return
 
         return make_reply_markup(layout)
 

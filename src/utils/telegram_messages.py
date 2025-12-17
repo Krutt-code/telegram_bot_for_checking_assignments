@@ -272,3 +272,7 @@ def split_telegram_html_message(
         parts.append(emit_chunk(start_stack, chunk_tokens, stack))
 
     return parts
+
+
+def get_a_teg(href: str, text: str) -> str:
+    return f'<a href="{href}">{text}</a>'

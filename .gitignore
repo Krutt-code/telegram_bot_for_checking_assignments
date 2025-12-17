@@ -420,3 +420,4 @@ FodyWeavers.xsd
 test.py
 !.env.example
 .cursorignore
+.cursor

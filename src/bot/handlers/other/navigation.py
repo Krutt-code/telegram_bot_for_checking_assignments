@@ -56,8 +56,6 @@ async def cancel_handler(_: Message, state: FSMContext, session: UserSession) ->
     """
     nav_manager = NavigationManager(state)
 
-    logger.info(f"fsm_history: \n{pformat(await nav_manager.get_history(), indent=4)}")
-
     # очищаем данные сценария, но не теряем history
     await nav_manager.clear_fsm_keep_history()
 
@@ -84,5 +82,4 @@ async def cancel_handler(_: Message, state: FSMContext, session: UserSession) ->
         return
 
     text, keyboard = await _get_fallback_menu(session)
-    logger.info(f"text: {text}, keyboard: {keyboard}")
     await session.answer(text, reply_markup=keyboard)

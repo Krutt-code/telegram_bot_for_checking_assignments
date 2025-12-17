@@ -8,9 +8,9 @@ from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from src.bot.handlers.full_name import FullNameStates
 from src.bot.lexicon.texts import TextsRU
 from src.core.enums import UserRoleEnum
+from src.core.fsm_states import FullNameStates
 from src.services import AdminStorage, RoleStorage
 
 if TYPE_CHECKING:
@@ -53,6 +53,7 @@ class HasRealFullNameFilter(BaseFilter):
         session: "UserSession",
         state: FSMContext,
     ) -> bool:
+
         has_full_name = await session.user_manager().has_real_full_name()
         if has_full_name:
             return True
