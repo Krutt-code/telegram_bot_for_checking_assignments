@@ -145,3 +145,87 @@ class TextsRU(StrEnum):
         "{teacher_line}"
         "\n<b>Описание:</b>\n{text}"
     )
+
+    # --- Teacher: homeworks ---
+    TEACHER_HOMEWORKS_EMPTY = "<b>Задания</b>\n\nПока нет созданных заданий."
+    TEACHER_HOMEWORK_VIEW = (
+        "<b>Задание</b>\n\n"
+        "<b>Тема:</b> {title}\n"
+        "<b>Выдано:</b> {start_at}\n"
+        "<b>Срок сдачи:</b> {end_at}\n\n"
+        "<b>Группы:</b> {groups}\n"
+        "<b>Ответов:</b> {answers_count}\n\n"
+        "<b>Описание:</b>\n{text}"
+    )
+    TEACHER_HOMEWORK_GROUPS_EMPTY = "—"
+    TEACHER_HOMEWORK_EDIT_BUTTON = "Редактировать"
+    TEACHER_HOMEWORK_DELETE_BUTTON = "Удалить"
+    TEACHER_HOMEWORK_DELETE_CONFIRM_ALERT = (
+        "Удалить задание?\n\nНажмите на кнопку ещё раз, чтобы подтвердить."
+    )
+    TEACHER_HOMEWORK_DELETE_SUCCESS_ALERT = "Задание удалено."
+    TEACHER_HOMEWORK_DELETED = "✅ Задание удалено ({deleted_at})."
+
+    TEACHER_HOMEWORK_EDIT_TITLE = "Название"
+    TEACHER_HOMEWORK_EDIT_TEXT = "Текст"
+    TEACHER_HOMEWORK_EDIT_FILES = "Файлы"
+    TEACHER_HOMEWORK_EDIT_GROUPS = "Группы"
+    TEACHER_HOMEWORK_EDIT_BACK = "Назад"
+    TEACHER_HOMEWORK_EDIT_TITLE_PROMPT = "Введите новое название задания."
+    TEACHER_HOMEWORK_EDIT_TITLE_EMPTY = "Название пустое. Введите текст."
+    TEACHER_HOMEWORK_EDIT_TEXT_PROMPT = "Введите новый текст задания."
+    TEACHER_HOMEWORK_EDIT_TEXT_EMPTY = "Текст пустой. Введите текст."
+    TEACHER_HOMEWORK_EDIT_SUCCESS = "✅ Изменения сохранены."
+    TEACHER_HOMEWORK_EDIT_FILES_PROMPT = (
+        "Пришлите новые файлы (фото/документы) для задания.\n\n"
+        "Старые файлы будут заменены.\n"
+        "Когда закончите — отправьте /done"
+    )
+    TEACHER_HOMEWORK_EDIT_FILES_ADDED = (
+        "✅ Файл добавлен. Всего файлов: {count}. Добавьте ещё или /done."
+    )
+    TEACHER_HOMEWORK_EDIT_GROUPS_PROMPT = (
+        "<b>Выберите группы</b>\n\nНажимайте на группы для выбора."
+    )
+    TEACHER_HOMEWORK_EDIT_GROUPS_EMPTY = "Выберите хотя бы одну группу."
+
+    TEACHER_HOMEWORK_CREATE_TITLE_PROMPT = "Введите название нового задания."
+    TEACHER_HOMEWORK_CREATE_TITLE_EMPTY = "Название пустое. Введите текст."
+    TEACHER_HOMEWORK_CREATE_TEXT_PROMPT = "Введите описание задания."
+    TEACHER_HOMEWORK_CREATE_TEXT_EMPTY = "Описание пустое. Введите текст."
+    TEACHER_HOMEWORK_CREATE_DEADLINE_PROMPT = (
+        "Введите срок сдачи.\n\nФормат: <b>ДД.ММ.ГГГГ ЧЧ:ММ</b>\n"
+        "Например: 31.12.2025 23:59"
+    )
+    TEACHER_HOMEWORK_CREATE_DEADLINE_INVALID = (
+        "❌ Некорректная дата. Попробуйте ещё раз."
+    )
+    TEACHER_HOMEWORK_CREATE_DEADLINE_PAST = "❌ Срок сдачи должен быть в будущем."
+    TEACHER_HOMEWORK_CREATE_FILES_PROMPT = (
+        "Пришлите фото и/или документы к заданию.\n\n"
+        "Отправляйте по одному сообщению.\n"
+        "Когда закончите — отправьте команду /done\n\n"
+        "Если файлов нет — тоже отправьте /done"
+    )
+    TEACHER_HOMEWORK_CREATE_FILES_PHOTO_ONLY = "Пока поддерживаются фото/документы (и опционально видео). Пришлите файл или /done."
+    TEACHER_HOMEWORK_CREATE_FILES_ADDED = (
+        "✅ Файл добавлен. Всего файлов: {count}. Добавьте ещё или /done."
+    )
+    TEACHER_HOMEWORK_CREATE_GROUPS_PROMPT = (
+        "<b>Выберите группы</b>\n\nНажимайте на группы для выбора."
+    )
+    TEACHER_HOMEWORK_CREATE_GROUPS_EMPTY = "Выберите хотя бы одну группу."
+    TEACHER_HOMEWORK_GROUP_SELECTED_PREFIX = "✅"
+    TEACHER_HOMEWORK_GROUP_UNSELECTED_PREFIX = "☑"
+    TEACHER_HOMEWORK_GROUPS_DONE_BUTTON = "Готово"
+    TEACHER_HOMEWORK_PREVIEW = (
+        "<b>Предпросмотр</b>\n\n"
+        "<b>Тема:</b> {title}\n"
+        "<b>Срок сдачи:</b> {end_at}\n"
+        "<b>Групп:</b> {groups_count}\n\n"
+        "<b>Описание:</b>\n{text}\n\n"
+        "Подтвердить создание?"
+    )
+    TEACHER_HOMEWORK_CONFIRM_CREATE_BUTTON = "Подтвердить"
+    TEACHER_HOMEWORK_CANCEL_CREATE_BUTTON = "Отмена"
+    TEACHER_HOMEWORK_CREATE_SUCCESS = "✅ Задание создано."

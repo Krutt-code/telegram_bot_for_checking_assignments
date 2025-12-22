@@ -15,6 +15,7 @@ from src.bot.filters.callback import CallbackFilter
 from src.bot.lexicon.texts import TextsRU
 from src.bot.navigation import NavigationManager
 from src.bot.session import UserSession
+from src.core.enums import ReplyKeyboardTypeEnum
 from src.core.fsm_states import StudentHomeworkAnswerStates
 from src.core.schemas import StudentHomeworkCallbackSchema
 from src.db.services import HomeworksService
@@ -78,17 +79,26 @@ async def student_homework_answer_receive_text(
         await session.answer(TextsRU.TRY_AGAIN)
         return
 
+    nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
+    await nav_manager.clear_state_and_data_keep_navigation()
+
     if hw.end_at and hw.end_at <= datetime.now():
         await session.answer(TextsRU.STUDENT_HOMEWORK_ANSWER_DEADLINE_PASSED)
-        nav_manager = NavigationManager(state)
-        await nav_manager.clear_state_and_data_keep_navigation()
+        await session.answer(
+            TextsRU.SELECT_ACTION,
+            reply_markup=ReplyKeyboardTypeEnum.STUDENT,
+            include_back=False,
+            include_cancel=False,
+        )
         return
 
     await session.student_manager().submit_answer(
         homework_id=int(homework_id), text=text
     )
 
-    nav_manager = NavigationManager(state)
-    await nav_manager.clear_state_and_data_keep_navigation()
-
     await session.answer(TextsRU.STUDENT_HOMEWORK_ANSWER_SENT)
+    await session.answer(
+        TextsRU.SELECT_ACTION,
+        reply_markup=ReplyKeyboardTypeEnum.STUDENT,
+    )

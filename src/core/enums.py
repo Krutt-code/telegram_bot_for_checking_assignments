@@ -71,6 +71,7 @@ class CommandsEnum(StrEnum):
 
     TEACHER_ROLE = "teacher_role"
     TEACHER_HOMEWORKS = "teacher_homeworks"
+    TEACHER_HOMEWORK_CREATE = "teacher_homework_create"
 
     TEACHER_GROUPS = "teacher_groups"
     TEACHER_GROUP_CREATE = "teacher_group_create"
@@ -124,3 +125,7 @@ class InlineKeyboardTypeEnum(StrEnum):
     TEACHER_GROUP_STUDENTS_REVIEW = "teacher_group_students_review"
     STUDENT_GROUP_EXIT = "student_group_exit"
     STUDENT_HOMEWORK_REVIEW = "student_homework_review"
+    TEACHER_HOMEWORK_REVIEW = "teacher_homework_review"
+    TEACHER_HOMEWORK_EDIT_MENU = "teacher_homework_edit_menu"
+    TEACHER_HOMEWORK_GROUPS_SELECT = "teacher_homework_groups_select"
+    TEACHER_HOMEWORK_CONFIRM = "teacher_homework_confirm"

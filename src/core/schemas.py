@@ -443,6 +443,19 @@ class StudentHomeworkCallbackSchema(CallbackSchemaBase):
     PREFIX: ClassVar[str] = "shw"
 
 
+class TeacherHomeworkCallbackSchema(CallbackSchemaBase):
+    """
+    Callback для действий над заданием преподавателя.
+
+    Формат: thw:<action>:<homework_id>
+    """
+
+    action: str
+    homework_id: int
+
+    PREFIX: ClassVar[str] = "thw"
+
+
 class InlineButtonSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

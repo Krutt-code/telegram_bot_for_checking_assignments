@@ -19,3 +19,19 @@ class TeacherGroupDeleteStates(StatesGroup):
 
 class StudentHomeworkAnswerStates(StatesGroup):
     waiting_for_text = State()
+
+
+class TeacherHomeworkCreateStates(StatesGroup):
+    waiting_for_title = State()
+    waiting_for_text = State()
+    waiting_for_deadline = State()
+    waiting_for_files = State()
+    selecting_groups = State()
+    confirming = State()
+
+
+class TeacherHomeworkEditStates(StatesGroup):
+    waiting_for_title = State()
+    waiting_for_text = State()
+    waiting_for_files = State()
+    selecting_groups = State()

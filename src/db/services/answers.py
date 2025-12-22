@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.enums import AnswersStatusEnum
 from src.core.schemas import AnswerCreateSchema, AnswerSchema
+from src.db.models import AnswersModel
 from src.db.repositories import AnswersRepository
 from src.db.session import with_session
 
@@ -73,3 +75,15 @@ class AnswersService:
             },
             session=session,
         )
+
+    @classmethod
+    @with_session
+    async def count_by_homework_id(
+        cls, homework_id: int, session: AsyncSession = None
+    ) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(AnswersModel)
+            .where(AnswersModel.homework_id == homework_id)
+        )
+        return int((await session.scalar(stmt)) or 0)

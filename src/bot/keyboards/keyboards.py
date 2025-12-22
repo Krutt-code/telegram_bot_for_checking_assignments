@@ -51,6 +51,9 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
     ReplyKeyboardTypeEnum.TEACHER_GROUPS: [
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_CREATE]],
     ],
+    ReplyKeyboardTypeEnum.TEACHER_HOMEWORKS: [
+        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_HOMEWORK_CREATE]],
+    ],
     ReplyKeyboardTypeEnum.TEACHER_GROUP_VIEW: [
         [
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_EDIT],
@@ -66,6 +69,10 @@ INLINE_KEYBOARDS: Dict[
 ] = {
     InlineKeyboardTypeEnum.TEACHER_GROUPS_REVIEW: (paginated_list_inline),
     InlineKeyboardTypeEnum.TEACHER_GROUP_STUDENTS_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_HOMEWORK_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_HOMEWORK_EDIT_MENU: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_HOMEWORK_GROUPS_SELECT: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_HOMEWORK_CONFIRM: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_HOMEWORK_REVIEW: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_GROUP_EXIT: [
         [

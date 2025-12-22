@@ -13,6 +13,7 @@ COMMAND_DESCRIPTIONS_RU: dict[CommandsEnum, str] = {
     CommandsEnum.STUDENT_GROUP: "Текущая группа",
     CommandsEnum.TEACHER_ROLE: "Преподаватель",
     CommandsEnum.TEACHER_HOMEWORKS: "Посмотреть задания",
+    CommandsEnum.TEACHER_HOMEWORK_CREATE: "Создать задание",
     CommandsEnum.TEACHER_GROUPS: "Посмотреть группы",
     CommandsEnum.TEACHER_GROUP_CREATE: "Создать группу",
     CommandsEnum.TEACHER_GROUP_EDIT: "Редактировать",

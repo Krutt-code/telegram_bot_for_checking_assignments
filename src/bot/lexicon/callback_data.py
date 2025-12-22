@@ -18,4 +18,6 @@ CALLBACK_DATA: dict[str, str] = {
     "TEACHER_GROUP_STUDENT": "tgst:{action}:{group_id}:{student_id}:{page}",
     # Действия над заданием студента: shw:<action>:<homework_id>
     "STUDENT_HOMEWORK": "shw:{action}:{homework_id}",
+    # Действия над заданием преподавателя: thw:<action>:<homework_id>
+    "TEACHER_HOMEWORK": "thw:{action}:{homework_id}",
 }

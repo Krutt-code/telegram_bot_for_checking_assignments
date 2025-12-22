@@ -66,3 +66,24 @@ class AssignedGroupsService:
             session=session,
         )
         return assigned_groups[0] if assigned_groups else None
+
+    @classmethod
+    @with_session
+    async def get_all_groups_by_teacher_id(
+        cls,
+        teacher_id: int,
+        *,
+        session: AsyncSession = None,
+    ) -> list[GroupSchema]:
+        stmt = (
+            select(GroupsModel)
+            .join(
+                AssignedGroupsModel,
+                AssignedGroupsModel.group_id == GroupsModel.group_id,
+            )
+            .where(AssignedGroupsModel.teacher_id == teacher_id)
+            .order_by(GroupsModel.group_id.asc())
+        )
+        res = await session.execute(stmt)
+        models = res.unique().scalars().all()
+        return [GroupSchema.model_validate(m) for m in models]

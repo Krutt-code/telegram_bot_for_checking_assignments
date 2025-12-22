@@ -26,14 +26,15 @@ from src.core.schemas import (
     PaginationStateSchema,
     StudentHomeworkCallbackSchema,
 )
-from src.db.services import HomeworkFilesService, HomeworksService
+from src.db.services import HomeworkFilesService, HomeworksService, StudentsService
 
 homeworks_router = Router()
 
 
-_PAGINATION_PREFIX = "student_homeworks:"
+_PAGINATION_KEY = "student_homeworks"
 _PER_PAGE = 1
 _STATE_PHOTO_MSG_IDS_KEY = "student_homeworks_photo_message_ids"
+_STATE_GROUP_ID_KEY = "student_homeworks_group_id"
 
 
 def _format_dt(dt: Optional[datetime]) -> str:
@@ -43,17 +44,6 @@ def _format_dt(dt: Optional[datetime]) -> str:
         return dt.strftime("%d.%m.%Y %H:%M")
     except Exception:
         return str(dt)
-
-
-def _extract_group_id_from_key(key: str) -> Optional[int]:
-    # ожидаем: "student_homeworks:<group_id>"
-    try:
-        prefix, raw_id = key.split(":", 1)
-        if prefix != _PAGINATION_PREFIX.rstrip(":"):
-            return None
-        return int(raw_id)
-    except Exception:
-        return None
 
 
 async def _delete_previous_photos(state: FSMContext, session: UserSession) -> None:
@@ -79,17 +69,28 @@ async def _send_homework_photos(
     await _delete_previous_photos(state, session)
 
     files = await HomeworkFilesService.get_files_by_homework_id(homework_id)
-    photo_ids: list[int] = []
+    media_ids: list[int] = []
     for f in files:
         tf = f.telegram_file
-        if not tf or tf.file_type != HomeworkMediaTypeEnum.PHOTO.value:
+        if not tf:
             continue
         try:
-            msg = await session.message.answer_photo(photo=tf.file_id)
-            photo_ids.append(msg.message_id)
+            if tf.file_type == HomeworkMediaTypeEnum.PHOTO.value:
+                msg = await session.message.answer_photo(photo=tf.file_id)
+                media_ids.append(msg.message_id)
+            elif tf.file_type == HomeworkMediaTypeEnum.DOCUMENT.value:
+                msg = await session.message.answer_document(
+                    document=tf.file_id, caption=tf.caption
+                )
+                media_ids.append(msg.message_id)
+            elif tf.file_type == HomeworkMediaTypeEnum.VIDEO.value:
+                msg = await session.message.answer_video(
+                    video=tf.file_id, caption=tf.caption
+                )
+                media_ids.append(msg.message_id)
         except Exception:
             continue
-    await state.update_data({_STATE_PHOTO_MSG_IDS_KEY: photo_ids})
+    await state.update_data({_STATE_PHOTO_MSG_IDS_KEY: media_ids})
 
 
 def _build_homework_text(homework) -> str:
@@ -126,7 +127,7 @@ def _build_homework_keyboard(
     homework_id: int,
     allow_answer: bool,
 ):
-    key = f"{_PAGINATION_PREFIX}{group_id}"
+    key = _PAGINATION_KEY
     extra_buttons = []
     if allow_answer:
         extra_buttons.append(
@@ -161,9 +162,18 @@ async def student_homeworks_review_handler(
     if not group:
         await session.answer(TextsRU.STUDENT_GROUP_NOT_FOUND)
         return
+    await state.update_data({_STATE_GROUP_ID_KEY: group.group_id})
 
-    page_data = await HomeworksService.get_homeworks_page_by_group_id(
-        group.group_id, page=1, per_page=_PER_PAGE
+    student = await StudentsService.get_by_user_id(session.user_id)
+    if not student:
+        await session.answer(TextsRU.TRY_AGAIN)
+        return
+
+    page_data = await HomeworksService.get_pending_homeworks_page_for_student(
+        group_id=group.group_id,
+        student_id=student.student_id,
+        page=1,
+        per_page=_PER_PAGE,
     )
     if not page_data.items:
         await session.answer(TextsRU.STUDENT_HOMEWORKS_EMPTY)
@@ -191,7 +201,7 @@ async def student_homeworks_review_handler(
 @homeworks_router.callback_query(
     CallbackFilter(
         PaginationCallbackSchema,
-        key=lambda k: isinstance(k, str) and k.startswith(_PAGINATION_PREFIX),
+        key=_PAGINATION_KEY,
     )
 )
 async def student_homeworks_pagination_handler(
@@ -202,13 +212,25 @@ async def student_homeworks_pagination_handler(
 ) -> None:
     await session.answer_callback_query()
 
-    group_id = _extract_group_id_from_key(callback_data.key)
+    group_id = await state.get_value(_STATE_GROUP_ID_KEY, None)
     if not group_id:
+        group = await session.student_manager().get_group()
+        if not group:
+            await session.answer(TextsRU.STUDENT_GROUP_NOT_FOUND)
+            return
+        group_id = group.group_id
+        await state.update_data({_STATE_GROUP_ID_KEY: group_id})
+
+    student = await StudentsService.get_by_user_id(session.user_id)
+    if not student:
         await session.answer(TextsRU.TRY_AGAIN)
         return
 
-    page_data = await HomeworksService.get_homeworks_page_by_group_id(
-        group_id, page=callback_data.page, per_page=_PER_PAGE
+    page_data = await HomeworksService.get_pending_homeworks_page_for_student(
+        group_id=int(group_id),
+        student_id=student.student_id,
+        page=callback_data.page,
+        per_page=_PER_PAGE,
     )
     if not page_data.items:
         await session.edit_message(
@@ -230,7 +252,7 @@ async def student_homeworks_pagination_handler(
         message_id=session.message.message_id,
         reply_markup=InlineKeyboardTypeEnum.STUDENT_HOMEWORK_REVIEW,
         keyboard_data=_build_homework_keyboard(
-            group_id=group_id,
+            group_id=int(group_id),
             page=page_data.page,
             total_pages=page_data.total_pages,
             homework_id=hw.homework_id,
