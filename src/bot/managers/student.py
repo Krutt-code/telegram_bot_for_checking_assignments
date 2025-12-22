@@ -7,11 +7,13 @@ from src.bot.managers.base import BaseUserManager, ensure_telegram_user_decorato
 from src.core.enums import UserRoleEnum
 from src.core.schemas import (
     AnswerCreateSchema,
+    AssignedGroupSchema,
     GroupSchema,
     StudentCreateSchema,
+    TeacherSchema,
     TelegramFileCreateSchema,
 )
-from src.db.services import StudentsService
+from src.db.services import AssignedGroupsService, StudentsService
 from src.db.use_cases.assignments import AssignmentsUseCase
 
 if TYPE_CHECKING:
@@ -30,6 +32,7 @@ class StudentManager(BaseUserManager):
     ) -> None:
         super().__init__(user_session=user_session)
         self.students = StudentsService()
+        self.assigned_groups = AssignedGroupsService()
         self.assignments = AssignmentsUseCase()
 
     @ensure_telegram_user_decorator
@@ -49,8 +52,7 @@ class StudentManager(BaseUserManager):
     @ensure_telegram_user_decorator
     async def get_group(self) -> Optional[GroupSchema]:
         """
-        Получить группу студента по telegram user_id.
-        Возвращает group_id.
+        Получить группу студента.
         """
         return await self.students.get_group_by_user_id(self.session.user_id)
 
@@ -61,6 +63,37 @@ class StudentManager(BaseUserManager):
         Возвращает количество обновлённых строк (0/1).
         """
         return await self.students.set_group_by_user_id(self.session.user_id, group_id)
+
+    @ensure_telegram_user_decorator
+    async def leave_group(self) -> int:
+        """
+        Выйти из группы (сбросить group_id = NULL) по telegram user_id.
+        Возвращает количество обновлённых строк.
+        """
+        return await self.students.set_group_by_user_id(self.session.user_id, None)
+
+    @ensure_telegram_user_decorator
+    async def get_teacher(self) -> Optional[TeacherSchema]:
+        """
+        Получить преподователя студента.
+        """
+        group = await self.students.get_group_by_user_id(self.session.user_id)
+        if not group:
+            return None
+        assigned_group = await self.assigned_groups.get_by_group_id(group.group_id)
+        if not assigned_group:
+            return None
+        return assigned_group.teacher
+
+    @ensure_telegram_user_decorator
+    async def get_assigned_group(self) -> Optional[AssignedGroupSchema]:
+        """
+        Получить назначенную группу студента и преподователя.
+        """
+        group = await self.students.get_group_by_user_id(self.session.user_id)
+        if not group:
+            return None
+        return await self.assigned_groups.get_by_group_id(group.group_id)
 
     @ensure_telegram_user_decorator
     async def submit_answer(

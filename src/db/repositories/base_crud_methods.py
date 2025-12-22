@@ -46,9 +46,41 @@ class BaseCRUDMethods(Generic[ModelType, SchemaType, CreateSchemaType]):
         Добавить relationship к запросу.
         """
         relationships = set(cls.base_relationships + (relationships or []))
-        for relationship in relationships:
-            if hasattr(cls.model, relationship):
-                query = query.options(joinedload(getattr(cls.model, relationship)))
+
+        def _joinedload_option(path: str):
+            """
+            Создание дополнительного запроса для relationship.
+            """
+            parts = [p for p in (path or "").split(".") if p]
+            if not parts:
+                return None
+
+            if not hasattr(cls.model, parts[0]):
+                return None
+
+            current_attr = getattr(cls.model, parts[0])
+            opt = joinedload(current_attr)
+
+            for part in parts[1:]:
+                # Determine target class for the current relationship
+                try:
+                    target_cls = current_attr.property.mapper.class_
+                except Exception:
+                    return opt
+
+                if not hasattr(target_cls, part):
+                    return opt
+
+                next_attr = getattr(target_cls, part)
+                opt = opt.joinedload(next_attr)
+                current_attr = next_attr
+
+            return opt
+
+        for relationship_path in relationships:
+            opt = _joinedload_option(relationship_path)
+            if opt is not None:
+                query = query.options(opt)
         return query
 
     @classmethod

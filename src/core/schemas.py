@@ -418,6 +418,31 @@ class TeacherGroupStudentCallbackSchema(CallbackSchemaBase):
     PREFIX: ClassVar[str] = "tgst"
 
 
+class StudentGroupExitCallbackSchema(CallbackSchemaBase):
+    """
+    Callback для выхода студента из группы.
+
+    Формат: sgx:<action>
+    """
+
+    action: str
+
+    PREFIX: ClassVar[str] = "sgx"
+
+
+class StudentHomeworkCallbackSchema(CallbackSchemaBase):
+    """
+    Callback для действий над заданием студента.
+
+    Формат: shw:<action>:<homework_id>
+    """
+
+    action: str
+    homework_id: int
+
+    PREFIX: ClassVar[str] = "shw"
+
+
 class InlineButtonSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

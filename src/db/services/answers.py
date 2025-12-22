@@ -11,10 +11,7 @@ from src.db.session import with_session
 
 class AnswersService:
     """
-    Сервис для работы с ответами (answers).
-
-    Важно: бизнес-операции, затрагивающие несколько таблиц (ответ + файлы + проверка прав),
-    лучше размещать в use-case/оркестраторе (см. src/use_cases).
+    Сервис для работы с ответами.
     """
 
     answers_repository: AnswersRepository = AnswersRepository

@@ -10,7 +10,7 @@ from src.db.session import with_session
 
 class TeachersService:
     """
-    Сервис для работы с учителями
+    Сервис для работы с учителями.
     """
 
     teachers_repository: TeachersRepository = TeachersRepository

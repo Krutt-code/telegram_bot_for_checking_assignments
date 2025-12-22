@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.schemas import StudentCreateSchema, StudentSchema
+from src.core.schemas import GroupSchema, StudentCreateSchema, StudentSchema
 from src.db.models import StudentsModel
 from src.db.repositories import StudentsRepository
 from src.db.session import with_session
@@ -10,7 +10,7 @@ from src.db.session import with_session
 
 class StudentsService:
     """
-    Сервис для работы со студентами
+    Сервис для работы со студентами.
     """
 
     students_repository: StudentsRepository = StudentsRepository()
@@ -61,7 +61,10 @@ class StudentsService:
     @classmethod
     @with_session
     async def set_group(
-        cls, student: StudentSchema, group_id: int, session: AsyncSession = None
+        cls,
+        student: StudentSchema,
+        group_id: Optional[int],
+        session: AsyncSession = None,
     ) -> None:
         return await cls.students_repository.update_values_by_id(
             student.student_id, {"group_id": group_id}, session=session
@@ -70,13 +73,21 @@ class StudentsService:
     @classmethod
     @with_session
     async def set_group_by_user_id(
-        cls, user_id: int, group_id: int, session: AsyncSession = None
+        cls, user_id: int, group_id: Optional[int], session: AsyncSession = None
     ) -> int:
         return await cls.students_repository.update_values(
             where={"user_id": user_id},
             values={"group_id": group_id},
             session=session,
         )
+
+    @classmethod
+    @with_session
+    async def get_group_by_user_id(
+        cls, user_id: int, session: AsyncSession = None
+    ) -> Optional[GroupSchema]:
+        student = await cls.get_by_user_id(user_id, session=session)
+        return student.group if student else None
 
     @classmethod
     @with_session

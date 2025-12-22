@@ -1,18 +1,23 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.schemas import GroupSchema
+from src.core.schemas import AssignedGroupSchema, GroupSchema
 from src.db.models import AssignedGroupsModel, GroupsModel
 from src.db.pagination import Page, paginate_select
+from src.db.repositories import AssignedGroupsRepository
 from src.db.session import with_session
 
 
 class AssignedGroupsService:
     """
-    Сервис для работы с назначенными группами (assigned_groups).
+    Сервис для работы с назначенными группами.
     """
+
+    assigned_groups_repository: AssignedGroupsRepository = AssignedGroupsRepository
 
     @classmethod
     @with_session
@@ -49,3 +54,15 @@ class AssignedGroupsService:
             count_stmt=count_stmt,
         )
         return page_models.map(GroupSchema.model_validate)
+
+    @classmethod
+    @with_session
+    async def get_by_group_id(
+        cls, group_id: int, session: AsyncSession = None
+    ) -> Optional[AssignedGroupSchema]:
+        assigned_groups = await cls.assigned_groups_repository.get_all_where(
+            where={AssignedGroupsModel.group_id: group_id},
+            load_relationships=["teacher", "teacher.user", "group"],
+            session=session,
+        )
+        return assigned_groups[0] if assigned_groups else None

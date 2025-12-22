@@ -2,7 +2,9 @@ from typing import Dict, List, Union
 
 from src.bot.keyboards.paginated_list import paginated_list_inline
 from src.bot.lexicon.command_texts import COMMAND_DESCRIPTIONS_RU
+from src.bot.lexicon.texts import TextsRU
 from src.core.enums import CommandsEnum, InlineKeyboardTypeEnum, ReplyKeyboardTypeEnum
+from src.core.schemas import StudentGroupExitCallbackSchema
 
 # Используем текст как значение кнопки
 REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
@@ -62,10 +64,15 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
 INLINE_KEYBOARDS: Dict[
     InlineKeyboardTypeEnum, Union[List[List[Dict[str, str]]], callable]
 ] = {
-    InlineKeyboardTypeEnum.TEACHER_GROUPS_REVIEW: (
-        lambda data: paginated_list_inline(data)
-    ),
-    InlineKeyboardTypeEnum.TEACHER_GROUP_STUDENTS_REVIEW: (
-        lambda data: paginated_list_inline(data)
-    ),
+    InlineKeyboardTypeEnum.TEACHER_GROUPS_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_GROUP_STUDENTS_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.STUDENT_HOMEWORK_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.STUDENT_GROUP_EXIT: [
+        [
+            {
+                "text": TextsRU.STUDENT_GROUP_EXIT,
+                "callback_data": StudentGroupExitCallbackSchema(action="exit").pack(),
+            }
+        ]
+    ],
 }

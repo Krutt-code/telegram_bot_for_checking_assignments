@@ -10,4 +10,4 @@ class AssignedGroupsRepository(
     schema = AssignedGroupSchema
     create_schema = AssignedGroupCreateSchema
     id_column = "assigned_group_id"
-    base_relationships = ["teacher", "group"]
+    base_relationships = ["teacher", "teacher.user", "group"]

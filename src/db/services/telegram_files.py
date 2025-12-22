@@ -9,7 +9,7 @@ from src.db.session import with_session
 
 class TelegramFilesService:
     """
-    Сервис для работы с файлами Telegram (telegram_files).
+    Сервис для работы с файлами Telegram.
     """
 
     telegram_files_repository: TelegramFilesRepository = TelegramFilesRepository

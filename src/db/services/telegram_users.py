@@ -9,7 +9,7 @@ from src.db.session import with_session
 
 class TelegramUsersService:
     """
-    Сервис для работы с пользователями Telegram
+    Сервис для работы с пользователями Telegram.
     """
 
     telegram_users_repository: TelegramUsersRepository = TelegramUsersRepository

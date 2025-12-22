@@ -15,3 +15,7 @@ class TeacherGroupEditStates(StatesGroup):
 
 class TeacherGroupDeleteStates(StatesGroup):
     waiting_for_confirm_name = State()
+
+
+class StudentHomeworkAnswerStates(StatesGroup):
+    waiting_for_text = State()

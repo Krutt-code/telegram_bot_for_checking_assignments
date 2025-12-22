@@ -88,6 +88,13 @@ class TextsRU(StrEnum):
         "❌ Название не совпало. Для удаления пришлите точное название группы."
     )
 
+    # --- Teacher: get link ---
+    TEACHER_GROUP_GET_LINK = (
+        "Ссылка для добавления студентов в группу.\n\n"
+        "Нажмите кнопку ниже, чтобы скопировать."
+    )
+    TEACHER_GROUP_GET_LINK_BUTTON = "Скопировать ссылку"
+
     # --- Teacher: remove student from group ---
     TEACHER_GROUP_STUDENT_REMOVE_CONFIRM_ALERT = (
         "Удалить студента из группы?\n\nНажмите на кнопку ещё раз, чтобы подтвердить."
@@ -103,9 +110,38 @@ class TextsRU(StrEnum):
         '✅ Вы добавлены в группу "{group_name}"\n' "Преподаватель: {teacher_full_name}"
     )
 
-    # --- Teacher: get link ---
-    TEACHER_GROUP_GET_LINK = (
-        "Ссылка для добавления студентов в группу.\n\n"
-        "Нажмите кнопку ниже, чтобы скопировать."
+    # --- Student: group ---
+    STUDENT_GROUP_NOT_FOUND = "❌ Группа не найдена."
+    STUDENT_GROUP_INFO = (
+        "Вы в группе «{group_name}». Преподаватель: {teacher_full_name}"
     )
-    TEACHER_GROUP_GET_LINK_BUTTON = "Скопировать ссылку"
+    STUDENT_GROUP_EXIT = "Выйти из группы"
+    STUDENT_GROUP_EXIT_CONFIRM = "Вы уверены что хотите выйти из группы?"
+    STUDENT_GROUP_EXIT_SUCCESS = "Вы вышли из группы."
+    STUDENT_GROUP_EXIT_FAILED = "Не удалось выйти из группы."
+
+    # --- Student: homeworks ---
+    STUDENT_HOMEWORKS_EMPTY = "<b>Задания</b>\n\nПока нет заданий для вашей группы."
+    STUDENT_HOMEWORK_ANSWER_BUTTON = "Ответить"
+    STUDENT_HOMEWORK_START_AT_LINE = "<b>Выдано:</b> {start_at}\n"
+    STUDENT_HOMEWORK_TEACHER_LINE = "<b>Преподаватель:</b> {teacher_full_name}\n"
+    STUDENT_HOMEWORK_ANSWER_PROMPT = (
+        "<b>Ответ на задание</b>\n\n"
+        "Отправьте ваш ответ <b>текстом</b> одним сообщением."
+    )
+    STUDENT_HOMEWORK_ANSWER_TEXT_ONLY = (
+        "Пожалуйста, отправьте ответ текстовым сообщением."
+    )
+    STUDENT_HOMEWORK_ANSWER_EMPTY = "Ответ пустой. Отправьте текст."
+    STUDENT_HOMEWORK_ANSWER_SENT = "✅ Ответ отправлен."
+    STUDENT_HOMEWORK_ANSWER_DEADLINE_PASSED = (
+        "❌ Срок сдачи истёк. Ответить уже нельзя."
+    )
+    STUDENT_HOMEWORK_VIEW = (
+        "<b>Задание</b>\n\n"
+        "<b>Тема:</b> {title}\n"
+        "<b>Срок сдачи:</b> {end_at}\n"
+        "{start_at_line}"
+        "{teacher_line}"
+        "\n<b>Описание:</b>\n{text}"
+    )

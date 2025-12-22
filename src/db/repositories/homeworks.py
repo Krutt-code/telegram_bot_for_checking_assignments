@@ -10,4 +10,4 @@ class HomeworksRepository(
     schema = HomeworkSchema
     create_schema = HomeworkCreateSchema
     id_column = "homework_id"
-    base_relationships = ["teacher"]
+    base_relationships = ["teacher", "teacher.user"]

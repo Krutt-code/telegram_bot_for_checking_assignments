@@ -150,7 +150,6 @@ class NavigationManager:
         preserved = {k: v for k, v in data.items() if k in self._NAV_KEYS}
         await self.state.set_state(None)
         await self.state.set_data(preserved)
-        self.logger.debug(f"Очищаем state и сохраняем данные навигации: {preserved}")
 
     async def get_previous(self) -> Optional[NavigationStepSchema]:
         """
