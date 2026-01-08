@@ -146,6 +146,22 @@ class TextsRU(StrEnum):
         "\n<b>Описание:</b>\n{text}"
     )
 
+    # --- Student: answers ---
+    STUDENT_ANSWERS_EMPTY = "<b>Ответы</b>\n\nПока нет отправленных ответов."
+    STUDENT_ANSWER_STATUS_SENT = "Отправлено"
+    STUDENT_ANSWER_STATUS_REVIEWED = "Проверено"
+    STUDENT_ANSWER_STATUS_REJECTED = "Отклонено"
+    STUDENT_ANSWER_STATUS_ACCEPTED = "Принято"
+    STUDENT_ANSWER_VIEW = (
+        "<b>Ответ</b>\n\n"
+        "<b>Задание:</b> {homework_title}\n"
+        "<b>Отправлено:</b> {sent_at}\n"
+        "<b>Статус:</b> {status}\n"
+        "{grade_line}"
+        "{comment_line}"
+        "\n<b>Ваш ответ:</b>\n{student_answer}"
+    )
+
     # --- Teacher: homeworks ---
     TEACHER_HOMEWORKS_EMPTY = "<b>Задания</b>\n\nПока нет созданных заданий."
     TEACHER_HOMEWORK_VIEW = (

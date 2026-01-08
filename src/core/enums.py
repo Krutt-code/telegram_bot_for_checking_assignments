@@ -125,6 +125,7 @@ class InlineKeyboardTypeEnum(StrEnum):
     TEACHER_GROUP_STUDENTS_REVIEW = "teacher_group_students_review"
     STUDENT_GROUP_EXIT = "student_group_exit"
     STUDENT_HOMEWORK_REVIEW = "student_homework_review"
+    STUDENT_ANSWERS_REVIEW = "student_answers_review"
     TEACHER_HOMEWORK_REVIEW = "teacher_homework_review"
     TEACHER_HOMEWORK_EDIT_MENU = "teacher_homework_edit_menu"
     TEACHER_HOMEWORK_GROUPS_SELECT = "teacher_homework_groups_select"

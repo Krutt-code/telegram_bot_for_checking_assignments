@@ -74,6 +74,7 @@ INLINE_KEYBOARDS: Dict[
     InlineKeyboardTypeEnum.TEACHER_HOMEWORK_GROUPS_SELECT: (paginated_list_inline),
     InlineKeyboardTypeEnum.TEACHER_HOMEWORK_CONFIRM: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_HOMEWORK_REVIEW: (paginated_list_inline),
+    InlineKeyboardTypeEnum.STUDENT_ANSWERS_REVIEW: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_GROUP_EXIT: [
         [
             {
