@@ -5,6 +5,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 
+from src.bot.errors import error_router
 from src.bot.handlers import all_handlers_router
 from src.bot.middlewares.app_context import AppContextMiddleware
 from src.bot.middlewares.user_session import UserSessionMiddleware
@@ -35,5 +36,7 @@ def create_dispatcher(ctx: AppContext) -> Dispatcher:
     dp.update.middleware(AppContextMiddleware(ctx))
     dp.update.middleware(UserSessionMiddleware())
 
+    # Подключаем обработчик ошибок первым
+    dp.include_router(error_router)
     dp.include_router(all_handlers_router)
     return dp

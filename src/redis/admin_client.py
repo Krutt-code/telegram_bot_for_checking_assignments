@@ -30,3 +30,21 @@ class RedisAdminClient:
 
     async def delete_admin(self, user_id: int) -> None:
         await self.redis_client.delete(self._prefix(user_id))
+
+    async def get_all_cached_admin_ids(self) -> list[int]:
+        """
+        Возвращает список ID всех закешированных администраторов.
+
+        Использует SCAN для безопасного получения всех ключей admin:*.
+        """
+        keys = await self.redis_client.scan_keys("admin:*")
+        admin_ids = []
+        for key in keys:
+            # Извлекаем user_id из ключа вида b'admin:123'
+            key_str = key.decode() if isinstance(key, bytes) else key
+            try:
+                user_id = int(key_str.split(":", 1)[1])
+                admin_ids.append(user_id)
+            except (IndexError, ValueError):
+                continue
+        return admin_ids
