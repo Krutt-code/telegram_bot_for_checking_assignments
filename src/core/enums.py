@@ -86,6 +86,8 @@ class CommandsEnum(StrEnum):
     ADMIN_STUDENTS = "admin_students"
     ADMIN_GROUPS = "admin_groups"
     ADMIN_TEACHERS = "admin_teachers"
+    ADMIN_BAN_USER = "admin_ban_user"
+    ADMIN_UNBAN_USER = "admin_unban_user"
 
     BACK = "back"
     CANCEL = "cancel"

@@ -19,6 +19,10 @@ async def main() -> None:
     logger = get_logger("app")
 
     ctx = await AppContext.create()
+
+    # Загружаем заблокированных пользователей в Redis
+    await ctx.user_locks_storage.load_all_banned_users()
+
     bot = create_bot()
     await set_main_menu(bot)
     dp = create_dispatcher(ctx)

@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery, Message, Update
 
 from src.bot.session import UserSession
 from src.redis import RedisTelegramUsersClient
-from src.services import AdminStorage, RoleStorage
+from src.services import AdminStorage, RoleStorage, UserLocksStorage
 
 
 class UserSessionMiddleware(BaseMiddleware):
@@ -38,21 +38,24 @@ class UserSessionMiddleware(BaseMiddleware):
                 "users_client" in data
                 and "admin_storage" in data
                 and "role_storage" in data
+                and "user_locks_storage" in data
             ):
                 users_client: RedisTelegramUsersClient = data["users_client"]
                 admin_storage: AdminStorage = data["admin_storage"]
                 role_storage: RoleStorage = data["role_storage"]
+                user_locks_storage: UserLocksStorage = data["user_locks_storage"]
             else:
                 ctx = data["ctx"]
                 users_client = ctx.users_client
                 admin_storage = ctx.admin_storage
                 role_storage = ctx.role_storage
-
+                user_locks_storage = ctx.user_locks_storage
             session_obj = UserSession(
                 obj,
                 users_client=users_client,
                 admin_storage=admin_storage,
                 role_storage=role_storage,
+                user_locks_storage=user_locks_storage,
                 state=data.get("state"),
             )
             # На всякий случай: если aiogram не положил FSMContext в data (редко),

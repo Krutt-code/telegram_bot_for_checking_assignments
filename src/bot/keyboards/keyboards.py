@@ -29,10 +29,11 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.SET_FULL_NAME]],
     ],
     ReplyKeyboardTypeEnum.ADMIN_PANEL: [
-        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_STUDENTS]],
-        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_GROUPS]],
-        [COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_TEACHERS]],
-    ],  # TODO: Реализовать меню для админа
+        [
+            COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_BAN_USER],
+            COMMAND_DESCRIPTIONS_RU[CommandsEnum.ADMIN_UNBAN_USER],
+        ],
+    ],
     ReplyKeyboardTypeEnum.STUDENT: [
         [
             COMMAND_DESCRIPTIONS_RU[CommandsEnum.STUDENT_HOMEWORKS],

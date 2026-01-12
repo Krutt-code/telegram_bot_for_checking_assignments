@@ -153,6 +153,15 @@ class TelegramUserSchema(BaseModel):
     real_full_name: Optional[str] = None
 
 
+class UserLockSchema(BaseModel):
+    """Схема для чтения блокировки пользователя"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: int
+    reason: Optional[str] = None
+
+
 class TeacherCreateSchema(BaseModel):
     """Схема для создания преподавателя"""
 

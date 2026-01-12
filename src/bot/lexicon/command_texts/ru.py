@@ -23,6 +23,8 @@ COMMAND_DESCRIPTIONS_RU: dict[CommandsEnum, str] = {
     CommandsEnum.ADMIN_STUDENTS: "Студенты",
     CommandsEnum.ADMIN_GROUPS: "Группы",
     CommandsEnum.ADMIN_TEACHERS: "Преподаватели",
+    CommandsEnum.ADMIN_BAN_USER: "Заблокировать пользователя",
+    CommandsEnum.ADMIN_UNBAN_USER: "Разблокировать пользователя",
     CommandsEnum.BACK: "Назад",
     CommandsEnum.CANCEL: "Отмена",
 }

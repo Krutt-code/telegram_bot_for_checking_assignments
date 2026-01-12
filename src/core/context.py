@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from src.core.logger import get_logger
 from src.core.settings import settings
 from src.redis import RedisClient, RedisTelegramUsersClient
-from src.services import AdminStorage, RoleStorage
+from src.services import AdminStorage, RoleStorage, UserLocksStorage
 
 # Константы для переподключения Redis
 REDIS_MAX_RETRIES = 5
@@ -28,6 +28,7 @@ class AppContext:
     users_client: RedisTelegramUsersClient
     admin_storage: AdminStorage
     role_storage: RoleStorage
+    user_locks_storage: UserLocksStorage
 
     @classmethod
     async def create(cls) -> "AppContext":
@@ -38,6 +39,7 @@ class AppContext:
             users_client=RedisTelegramUsersClient(redis),
             admin_storage=AdminStorage(redis),
             role_storage=RoleStorage(redis),
+            user_locks_storage=UserLocksStorage(redis),
         )
 
     @staticmethod
@@ -53,11 +55,13 @@ class AppContext:
         """
         for attempt in range(1, REDIS_MAX_RETRIES + 1):
             try:
-                logger.info(
-                    f"Попытка подключения к Redis ({attempt}/{REDIS_MAX_RETRIES})..."
-                )
+                if attempt > 1:
+                    logger.info(
+                        f"Попытка подключения к Redis ({attempt}/{REDIS_MAX_RETRIES})..."
+                    )
                 await redis.connect()
-                logger.info("✅ Успешное подключение к Redis")
+                if attempt > 1:
+                    logger.info("✅ Успешное подключение к Redis")
                 return
             except Exception as e:
                 error_msg = f"❌ Ошибка подключения к Redis (попытка {attempt}/{REDIS_MAX_RETRIES}): {e}"

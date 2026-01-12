@@ -5,6 +5,14 @@
 from typing import Any
 
 from aiogram import Router
+from aiogram.exceptions import (
+    TelegramBadRequest,
+    TelegramEntityTooLarge,
+    TelegramForbiddenError,
+    TelegramNetworkError,
+    TelegramNotFound,
+    TelegramRetryAfter,
+)
 from aiogram.types import CallbackQuery, ErrorEvent, Message, Update
 
 from src.core.logger import ModulLogger
@@ -55,17 +63,26 @@ async def errors_handler(event: ErrorEvent) -> Any:
         exc_info=exception,
     )
 
-    # Пытаемся уведомить пользователя
-    try:
-        if update.message:
-            await _notify_user_message(update.message, exception)
-        elif update.callback_query:
-            await _notify_user_callback(update.callback_query, exception)
-    except Exception as notification_error:
-        logger.error(
-            f"Не удалось уведомить пользователя об ошибке: {notification_error}",
-            exc_info=notification_error,
-        )
+    errors_users_dont_need_notification = [
+        TelegramNetworkError.__name__,
+        TelegramRetryAfter.__name__,
+        TelegramForbiddenError.__name__,
+        TelegramBadRequest.__name__,
+        TelegramNotFound.__name__,
+        TelegramEntityTooLarge.__name__,
+    ]
+    if error_type not in errors_users_dont_need_notification:
+        # Пытаемся уведомить пользователя
+        try:
+            if update.message:
+                await _notify_user_message(update.message, exception)
+            elif update.callback_query:
+                await _notify_user_callback(update.callback_query, exception)
+        except Exception as notification_error:
+            logger.error(
+                f"Не удалось уведомить пользователя об ошибке: {notification_error}",
+                exc_info=notification_error,
+            )
 
     # Возвращаем True, чтобы aiogram считал ошибку обработанной
     return True

@@ -23,6 +23,26 @@ class TelegramUsersModel(Base):
     real_full_name: Mapped[Optional[str]] = mapped_column(VARCHAR(127), default=None)
 
 
+class UserLocksModel(Base):
+    __tablename__ = "user_locks"
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(TelegramUsersModel.user_id, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+        unique=True,
+        index=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.current_timestamp()
+    )
+    reason: Mapped[Optional[str]] = mapped_column(TEXT, default=None)
+
+    # Relationships
+    user: Mapped[TelegramUsersModel] = relationship(
+        "TelegramUsersModel", foreign_keys=[user_id], lazy="select"
+    )
+
+
 class AdminsModel(Base):
     __tablename__ = "admins"
 

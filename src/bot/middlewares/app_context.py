@@ -27,4 +27,5 @@ class AppContextMiddleware(BaseMiddleware):
         data["users_client"] = self._ctx.users_client
         data["admin_storage"] = self._ctx.admin_storage
         data["role_storage"] = self._ctx.role_storage
+        data["user_locks_storage"] = self._ctx.user_locks_storage
         return await handler(event, data)

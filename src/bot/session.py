@@ -20,7 +20,7 @@ from src.bot.managers.base import BaseUserManager
 from src.bot.navigation import NavigationManager
 from src.core.enums import InlineKeyboardTypeEnum, ReplyKeyboardTypeEnum, UserRoleEnum
 from src.redis import RedisTelegramUsersClient
-from src.services import AdminStorage, RoleStorage
+from src.services import AdminStorage, RoleStorage, UserLocksStorage
 from src.utils.telegram_messages import split_telegram_html_message
 
 
@@ -39,6 +39,7 @@ class UserSession:
         users_client: RedisTelegramUsersClient,
         admin_storage: AdminStorage,
         role_storage: RoleStorage,
+        user_locks_storage: UserLocksStorage,
         state: Optional[FSMContext] = None,
     ) -> None:
         self.message: Message
@@ -61,6 +62,7 @@ class UserSession:
         self.users_client = users_client
         self.admin_storage = admin_storage
         self.role_storage = role_storage
+        self.user_locks_storage = user_locks_storage
         self._state: Optional[FSMContext] = state
 
         self.logger = bot_logger.get_class_logger(self)
@@ -83,6 +85,9 @@ class UserSession:
 
     async def clear_role(self) -> None:
         await self.role_storage.clear_role(self.user_id)
+
+    async def is_banned(self) -> bool:
+        return await self.user_locks_storage.is_banned(self.user_id)
 
     def user_manager(self) -> BaseUserManager:
         return BaseUserManager(self)

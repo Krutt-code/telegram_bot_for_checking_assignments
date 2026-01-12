@@ -10,6 +10,7 @@ from .students import StudentsRepository
 from .teachers import TeachersRepository
 from .telegram_files import TelegramFilesRepository
 from .telegram_users import TelegramUsersRepository
+from .user_locks import UserLocksRepository
 
 __all__ = [
     "AdminsRepository",
@@ -24,4 +25,5 @@ __all__ = [
     "TeachersRepository",
     "TelegramFilesRepository",
     "TelegramUsersRepository",
+    "UserLocksRepository",
 ]

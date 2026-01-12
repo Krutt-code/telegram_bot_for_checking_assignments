@@ -44,3 +44,16 @@ class TeacherAnswerGradingStates(StatesGroup):
     waiting_for_comment = State()
     editing_grade = State()
     editing_comment = State()  # Редактирование комментария
+
+
+class AdminBanUserStates(StatesGroup):
+    """Состояния для блокировки пользователя"""
+
+    waiting_for_user_id = State()
+    waiting_for_reason = State()
+
+
+class AdminUnbanUserStates(StatesGroup):
+    """Состояния для разблокировки пользователя"""
+
+    waiting_for_user_id = State()

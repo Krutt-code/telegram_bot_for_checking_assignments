@@ -11,7 +11,7 @@ from aiogram.types import CallbackQuery, Message
 from src.bot.lexicon.texts import TextsRU
 from src.core.enums import UserRoleEnum
 from src.core.fsm_states import FullNameStates
-from src.services import AdminStorage, RoleStorage
+from src.services import AdminStorage, RoleStorage, UserLocksStorage
 
 if TYPE_CHECKING:
     from src.bot.session import UserSession
@@ -62,3 +62,18 @@ class HasRealFullNameFilter(BaseFilter):
         await session.answer(TextsRU.FULL_NAME_REQUIRED)
         await session.answer(TextsRU.FULL_NAME_ENTER)
         return False
+
+
+class IsBannedFilter(BaseFilter):
+    """
+    Проверяет, что пользователь заблокирован.
+    Используется для обработчика заблокированных пользователей.
+    """
+
+    async def __call__(
+        self, event: Union[Message, CallbackQuery], user_locks_storage: UserLocksStorage
+    ) -> bool:
+        user_id = event.from_user.id
+        # Возвращаем True если заблокирован (обрабатываем)
+        # Возвращаем False если не заблокирован (пропускаем)
+        return await user_locks_storage.is_banned(user_id)
