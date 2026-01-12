@@ -91,6 +91,7 @@ async def teacher_group_delete_confirm_handler(
         return
 
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_GROUP_DELETE_SUCCESS)
 
@@ -152,6 +153,7 @@ async def teacher_group_edit_confirm_handler(
         return
 
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_GROUP_EDIT_SUCCESS)
 

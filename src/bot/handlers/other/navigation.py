@@ -2,8 +2,6 @@
 Обработчики для навигации (кнопки "Назад" и "Отмена").
 """
 
-from pprint import pformat
-
 from aiogram import Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext

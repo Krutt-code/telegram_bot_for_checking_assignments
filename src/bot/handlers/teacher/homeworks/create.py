@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from aiogram import Bot, Router
+from aiogram import Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -13,7 +13,12 @@ from src.bot.filters.callback import CallbackFilter
 from src.bot.lexicon.texts import TextsRU
 from src.bot.navigation import NavigationManager
 from src.bot.session import UserSession
-from src.core.enums import CommandsEnum, HomeworkMediaTypeEnum, InlineKeyboardTypeEnum
+from src.core.enums import (
+    CommandsEnum,
+    HomeworkMediaTypeEnum,
+    InlineKeyboardTypeEnum,
+    ReplyKeyboardTypeEnum,
+)
 from src.core.fsm_states import TeacherHomeworkCreateStates
 from src.core.logger import get_logger
 from src.core.schemas import (
@@ -313,6 +318,7 @@ async def teacher_homework_create_cancel(
 ) -> None:
     await session.answer_callback_query()
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.CANCEL)
 
@@ -380,5 +386,17 @@ async def teacher_homework_create_confirm(
                 pass
 
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_HOMEWORK_CREATE_SUCCESS)
+
+    # Возвращаемся к списку заданий
+    previous_step = await nav_manager.pop_previous(
+        default_keyboard=ReplyKeyboardTypeEnum.TEACHER_HOMEWORKS,
+        default_text=TextsRU.SELECT_ACTION,
+    )
+    if previous_step:
+        await session.answer(
+            previous_step.text or TextsRU.SELECT_ACTION,
+            reply_markup=previous_step.keyboard,
+        )

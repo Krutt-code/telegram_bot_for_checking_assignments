@@ -21,6 +21,7 @@ from aiogram.types import CallbackQuery, Message
 
 from src.bot.filters.callback import CallbackFilter
 from src.bot.lexicon.texts import TextsRU
+from src.bot.navigation import NavigationManager
 from src.bot.session import UserSession
 from src.core.enums import (
     AnswersStatusEnum,
@@ -332,6 +333,10 @@ async def show_answers_to_check_handler(
     """Показать непроверенные ответы на задание"""
     await session.answer_callback_query()
 
+    # Устанавливаем cancel_target для возврата к списку заданий
+    nav_manager = NavigationManager(state)
+    await nav_manager.set_cancel_target(await nav_manager.get_previous())
+
     # Сначала удаляем все предыдущие фото/файлы (от задания)
     await _delete_previous_photos(state, session)
 
@@ -399,6 +404,10 @@ async def show_reviewed_answers_handler(
 ) -> None:
     """Показать проверенные ответы на задание"""
     await session.answer_callback_query()
+
+    # Устанавливаем cancel_target для возврата к списку заданий
+    nav_manager = NavigationManager(state)
+    await nav_manager.set_cancel_target(await nav_manager.get_previous())
 
     # Сначала удаляем все предыдущие фото/файлы (от задания)
     await _delete_previous_photos(state, session)
@@ -895,7 +904,10 @@ async def send_grade_handler(
             message_id=editing_message_id,
             reply_markup=None,
         )
-        await state.clear()
+        # Очищаем состояние и данные, но сохраняем навигацию
+        nav_manager = NavigationManager(state)
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
 
 
 # ==================== Редактирование оценки ====================
@@ -949,6 +961,7 @@ async def edit_grade_process_handler(
     except (ValueError, AttributeError):
         await session.answer(TextsRU.TEACHER_GRADING_INVALID_GRADE)
         return
+    nav_manager = NavigationManager(state)
 
     data = await state.get_data()
     answer_id = data.get(_STATE_CURRENT_ANSWER_ID)
@@ -958,20 +971,23 @@ async def edit_grade_process_handler(
 
     if not answer_id or not homework_id or not editing_message_id:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     # Получаем ответ и задание
     answer = await AnswersService.get_by_id(int(answer_id))
     if not answer:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     homework = await HomeworksService.get_by_id(int(homework_id))
     if not homework:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     # Сохраняем новую оценку (комментарий оставляем прежним)
@@ -1006,7 +1022,8 @@ async def edit_grade_process_handler(
     )
 
     if not page_data.items:
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         await session.edit_message(
             TextsRU.TEACHER_GRADING_NO_REVIEWED_ANSWERS,
             message_id=editing_message_id,
@@ -1101,6 +1118,7 @@ async def edit_comment_process_handler(
 ) -> None:
     """Обработка нового комментария при редактировании"""
     comment = message.text.strip() if message.text else None
+    nav_manager = NavigationManager(state)
 
     if comment == TextsRU.TEACHER_GRADING_COMMENT_SKIP:
         comment = None
@@ -1113,20 +1131,23 @@ async def edit_comment_process_handler(
 
     if not answer_id or not homework_id or not editing_message_id:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     # Получаем ответ и задание
     answer = await AnswersService.get_by_id(int(answer_id))
     if not answer:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     homework = await HomeworksService.get_by_id(int(homework_id))
     if not homework:
         await session.answer(TextsRU.TRY_AGAIN)
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         return
 
     # Сохраняем новый комментарий (оценку оставляем прежней)
@@ -1161,7 +1182,8 @@ async def edit_comment_process_handler(
     )
 
     if not page_data.items:
-        await state.clear()
+        await nav_manager.clear_cancel_target()
+        await nav_manager.clear_state_and_data_keep_navigation()
         await session.edit_message(
             TextsRU.TEACHER_GRADING_NO_REVIEWED_ANSWERS,
             message_id=editing_message_id,

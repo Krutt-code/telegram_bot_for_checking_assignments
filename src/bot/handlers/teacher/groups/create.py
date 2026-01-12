@@ -54,6 +54,7 @@ async def teacher_groups_create_save_name(
         return
 
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
 
     await session.answer(

@@ -146,6 +146,7 @@ async def teacher_homework_edit_title_save(
         return
     nav_manager = NavigationManager(state)
     source_mid = await state.get_value(_EDIT_SOURCE_MSG_ID_KEY, None)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_HOMEWORK_EDIT_SUCCESS)
     if source_mid:
@@ -195,6 +196,7 @@ async def teacher_homework_edit_text_save(
         return
     nav_manager = NavigationManager(state)
     source_mid = await state.get_value(_EDIT_SOURCE_MSG_ID_KEY, None)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_HOMEWORK_EDIT_SUCCESS)
     if source_mid:
@@ -250,6 +252,7 @@ async def teacher_homework_edit_files_collect(
             ],
         )
         nav_manager = NavigationManager(state)
+        await nav_manager.clear_cancel_target()
         await nav_manager.clear_state_and_data_keep_navigation()
         await session.answer(TextsRU.TEACHER_HOMEWORK_EDIT_SUCCESS)
         if source_mid:
@@ -431,6 +434,7 @@ async def teacher_homework_edit_groups_done(
         homework_id=int(homework_id), group_ids=[int(x) for x in selected]
     )
     nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
     await nav_manager.clear_state_and_data_keep_navigation()
     await session.answer(TextsRU.TEACHER_HOMEWORK_EDIT_SUCCESS)
     if source_mid:

@@ -14,6 +14,7 @@ from aiogram.types import CallbackQuery, Message
 from src.bot.filters import CommandFilter
 from src.bot.filters.callback import CallbackFilter
 from src.bot.lexicon.texts import TextsRU
+from src.bot.navigation import NavigationHelper
 from src.bot.session import UserSession
 from src.core.enums import CommandsEnum, InlineKeyboardTypeEnum
 from src.core.schemas import StudentGroupExitCallbackSchema
@@ -25,7 +26,16 @@ _PENDING_KEY = "pending_student_group_exit"
 
 
 @group_router.message(CommandFilter(CommandsEnum.STUDENT_GROUP))
-async def student_group_handler(_: Message, session: UserSession) -> None:
+async def student_group_handler(
+    _: Message, state: FSMContext, session: UserSession
+) -> None:
+    await NavigationHelper.register_navigation_step(
+        state,
+        CommandsEnum.STUDENT_GROUP,
+        keyboard=None,
+        text=TextsRU.SELECT_ACTION,
+    )
+
     assigned_group = await session.student_manager().get_assigned_group()
     if not assigned_group:
         await session.answer(TextsRU.STUDENT_GROUP_NOT_FOUND)
