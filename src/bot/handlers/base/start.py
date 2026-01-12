@@ -46,8 +46,6 @@ async def start_handler(
         if not has_full_name:
             await state.update_data(pending_join_group_id=join.group_id)
             await state.set_state(FullNameStates.waiting_for_full_name)
-            await session.answer(TextsRU.FULL_NAME_REQUIRED)
-            await session.answer(TextsRU.FULL_NAME_ENTER)
             return
 
         await perform_join_group(session=session, group_id=join.group_id)

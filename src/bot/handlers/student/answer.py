@@ -79,10 +79,6 @@ async def student_homework_answer_receive_text(
         await session.answer(TextsRU.TRY_AGAIN)
         return
 
-    nav_manager = NavigationManager(state)
-    await nav_manager.clear_cancel_target()
-    await nav_manager.clear_state_and_data_keep_navigation()
-
     if hw.end_at and hw.end_at <= datetime.now():
         await session.answer(TextsRU.STUDENT_HOMEWORK_ANSWER_DEADLINE_PASSED)
         await session.answer(
@@ -98,7 +94,15 @@ async def student_homework_answer_receive_text(
     )
 
     await session.answer(TextsRU.STUDENT_HOMEWORK_ANSWER_SENT)
-    await session.answer(
-        TextsRU.SELECT_ACTION,
-        reply_markup=ReplyKeyboardTypeEnum.STUDENT,
+    nav_manager = NavigationManager(state)
+    await nav_manager.clear_cancel_target()
+    await nav_manager.clear_state_and_data_keep_navigation()
+    previous_step = await nav_manager.pop_previous(
+        default_keyboard=ReplyKeyboardTypeEnum.STUDENT,
+        default_text=TextsRU.SELECT_ACTION,
     )
+    if previous_step:
+        await session.answer(
+            previous_step.text or TextsRU.SELECT_ACTION,
+            reply_markup=previous_step.keyboard,
+        )

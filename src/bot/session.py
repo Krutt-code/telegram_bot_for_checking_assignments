@@ -214,6 +214,9 @@ class UserSession:
         for message_id in message_ids:
             await self.delete_message(message_id)
 
+    async def remove(self) -> None:
+        await self.delete_message(self.message.message_id)
+
     @staticmethod
     def _get_fake_message(callback_query: CallbackQuery) -> Message:
         """Поддельный объект Message от aiogram на основе callback_query."""

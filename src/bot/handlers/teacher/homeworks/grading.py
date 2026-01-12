@@ -899,15 +899,24 @@ async def send_grade_handler(
     else:
         # Нет больше непроверенных ответов - показываем уведомление
         await _delete_previous_photos(state, session)
-        await session.edit_message(
+        await session.answer(
             TextsRU.TEACHER_GRADING_ALL_CHECKED,
-            message_id=editing_message_id,
             reply_markup=None,
         )
+        await session.remove()
         # Очищаем состояние и данные, но сохраняем навигацию
         nav_manager = NavigationManager(state)
         await nav_manager.clear_cancel_target()
         await nav_manager.clear_state_and_data_keep_navigation()
+        previous_step = await nav_manager.pop_previous(
+            default_keyboard=ReplyKeyboardTypeEnum.TEACHER,
+            default_text=TextsRU.SELECT_ACTION,
+        )
+        if previous_step:
+            await session.answer(
+                previous_step.text or TextsRU.SELECT_ACTION,
+                reply_markup=previous_step.keyboard,
+            )
 
 
 # ==================== Редактирование оценки ====================
@@ -1022,14 +1031,18 @@ async def edit_grade_process_handler(
     )
 
     if not page_data.items:
+        await _delete_previous_photos(state, session)
         await nav_manager.clear_cancel_target()
         await nav_manager.clear_state_and_data_keep_navigation()
-        await session.edit_message(
-            TextsRU.TEACHER_GRADING_NO_REVIEWED_ANSWERS,
-            message_id=editing_message_id,
-            reply_markup=None,
+        previous_step = await nav_manager.pop_previous(
+            default_keyboard=ReplyKeyboardTypeEnum.TEACHER_GRADING_CHECK,
+            default_text=TextsRU.SELECT_ACTION,
         )
-        await _delete_previous_photos(state, session)
+        if previous_step:
+            await session.answer(
+                previous_step.text or TextsRU.SELECT_ACTION,
+                reply_markup=previous_step.keyboard,
+            )
         return
 
     # Получаем обновленный ответ
@@ -1047,7 +1060,8 @@ async def edit_grade_process_handler(
     )
 
     # Очищаем состояние FSM
-    await state.set_state(None)
+    await nav_manager.clear_cancel_target()
+    await nav_manager.clear_state_and_data_keep_navigation()
 
     # Отправляем файлы ответа
     await _send_answer_files(
@@ -1182,6 +1196,7 @@ async def edit_comment_process_handler(
     )
 
     if not page_data.items:
+        await _delete_previous_photos(state, session)
         await nav_manager.clear_cancel_target()
         await nav_manager.clear_state_and_data_keep_navigation()
         await session.edit_message(
@@ -1189,7 +1204,6 @@ async def edit_comment_process_handler(
             message_id=editing_message_id,
             reply_markup=None,
         )
-        await _delete_previous_photos(state, session)
         return
 
     # Получаем обновленный ответ
@@ -1207,7 +1221,8 @@ async def edit_comment_process_handler(
     )
 
     # Очищаем состояние FSM
-    await state.set_state(None)
+    await nav_manager.clear_cancel_target()
+    await nav_manager.clear_state_and_data_keep_navigation()
 
     # Отправляем файлы ответа
     await _send_answer_files(
