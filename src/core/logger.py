@@ -14,9 +14,8 @@ from __future__ import annotations
 import contextvars
 import logging
 import os
-from functools import lru_cache
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from concurrent_log_handler import ConcurrentRotatingFileHandler
 
@@ -38,8 +37,7 @@ _current_name: contextvars.ContextVar[str] = contextvars.ContextVar(
 _cache: dict[str, logging.Logger] = {}  # кэш созданных логгеров
 
 
-@lru_cache
-def get_log_file(name: str) -> Path:
+def get_log_file(name: Union[str, Path]) -> Path:
     return (_LOG_DIR / name).with_suffix(".log")
 
 
@@ -48,11 +46,14 @@ def get_log_file(name: str) -> Path:
 # ──────────────────────────────
 
 
-def _build_logger(name: str, log_file_name: Optional[str]) -> logging.Logger:
+def _build_logger(
+    name: str, log_file_name: Optional[Union[str, Path]]
+) -> logging.Logger:
     """Создаёт и настраивает новый logger с именем *name* (если его ещё нет)."""
     logger = logging.getLogger(name)
     log_file_name = log_file_name or _LOG_FILE_NAME
     log_file = get_log_file(log_file_name)
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Если хендлеры уже установлены – значит логгер сконфигурирован; просто вернём его
     if logger.handlers:
@@ -82,7 +83,7 @@ def _build_logger(name: str, log_file_name: Optional[str]) -> logging.Logger:
 
 
 def get_logger(
-    name: Optional[str] = None, *, log_file_name: Optional[str] = None
+    name: Optional[str] = None, *, log_file_name: Optional[Union[str, Path]] = None
 ) -> logging.Logger:
     """
     Возвращает (и кеширует) логгер с указанным *name*.
@@ -97,13 +98,17 @@ def get_logger(
     return _cache[name]
 
 
-def get_function_logger(func, *, log_file_name: Optional[str] = None) -> logging.Logger:
+def get_function_logger(
+    func, *, log_file_name: Optional[Union[str, Path]] = None
+) -> logging.Logger:
     """Логгер вида «module:function»."""
     full_name = f"{func.__module__}:{func.__qualname__}"
     return get_logger(full_name, log_file_name=log_file_name)
 
 
-def get_class_logger(obj, *, log_file_name: Optional[str] = None) -> logging.Logger:
+def get_class_logger(
+    obj, *, log_file_name: Optional[Union[str, Path]] = None
+) -> logging.Logger:
     """Логгер вида «module:ClassName»."""
     full_name = f"{obj.__module__}:{obj.__class__.__qualname__}"
     return get_logger(full_name, log_file_name=log_file_name)
@@ -111,13 +116,21 @@ def get_class_logger(obj, *, log_file_name: Optional[str] = None) -> logging.Log
 
 class ModulLogger:
     def __init__(self, log_file_name: str) -> None:
-        self.log_file_name = log_file_name
+        """
+        Создает логгер с указанным именем и создает директорию для логов, если она не существует.
+        Args:
+            log_file_name: Имя файла для логов(папка будет с таким же именем).
+        Returns:
+            Логгер с указанным именем.
+        """
+        self.log_file_name = Path(log_file_name).name
+        self.log_file_path = Path(self.log_file_name) / self.log_file_name
 
     def get_logger(self, name: Optional[str] = None):
-        return get_logger(name=name, log_file_name=self.log_file_name)
+        return get_logger(name=name, log_file_name=self.log_file_path)
 
     def get_function_logger(self, func):
-        return get_function_logger(func=func, log_file_name=self.log_file_name)
+        return get_function_logger(func=func, log_file_name=self.log_file_path)
 
     def get_class_logger(self, obj):
-        return get_class_logger(obj=obj, log_file_name=self.log_file_name)
+        return get_class_logger(obj=obj, log_file_name=self.log_file_path)
