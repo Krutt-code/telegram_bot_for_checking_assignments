@@ -35,3 +35,12 @@ class TeacherHomeworkEditStates(StatesGroup):
     waiting_for_text = State()
     waiting_for_files = State()
     selecting_groups = State()
+
+
+class TeacherAnswerGradingStates(StatesGroup):
+    """Состояния для выставления оценки и комментария"""
+
+    waiting_for_grade = State()
+    waiting_for_comment = State()
+    editing_grade = State()
+    editing_comment = State()  # Редактирование комментария

@@ -104,6 +104,79 @@ class TextsRU(StrEnum):
         "Не удалось удалить студента (возможно, он уже не в этой группе)."
     )
 
+    # --- Teacher: grading ---
+    TEACHER_GRADING_CHECK_BUTTON = "✅ Проверить"
+    TEACHER_GRADING_REVIEWED_BUTTON = "📋 Оцененные"
+    TEACHER_GRADING_ANSWER_VIEW = (
+        "<b>Студент:</b> {student_name}\n"
+        "<b>Группа:</b> {group_name}\n\n"
+        "<b>Ответ:</b>\n{answer_text}\n\n"
+        "<b>Отправлено:</b> {sent_at}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━\n"
+        "{grade_status}\n"
+        "{comment_status}"
+    )
+    TEACHER_GRADING_ANSWER_NO_TEXT = "<i>Текстовый ответ отсутствует</i>"
+    TEACHER_GRADING_REVIEWED_VIEW = (
+        "<b>Студент:</b> {student_name}\n"
+        "<b>Группа:</b> {group_name}\n\n"
+        "<b>Ответ:</b>\n{answer_text}\n\n"
+        "<b>Оценка:</b> {grade}/100\n"
+        "<b>Комментарий:</b> {comment}\n\n"
+        "<b>Проверено:</b> {checked_at}"
+    )
+    TEACHER_GRADING_NO_COMMENT = "<i>Без комментария</i>"
+    TEACHER_GRADING_GRADE_STATUS_SET = "✅ <b>Оценка:</b> {grade}/100"
+    TEACHER_GRADING_GRADE_STATUS_NOT_SET = "❌ <b>Оценка:</b> не выставлена"
+    TEACHER_GRADING_COMMENT_STATUS_SET = "✅ <b>Комментарий:</b> {comment_preview}"
+    TEACHER_GRADING_COMMENT_STATUS_NOT_SET = "❌ <b>Комментарий:</b> не добавлен"
+    TEACHER_GRADING_SET_GRADE_BUTTON = "✏️ Дать оценку"
+    TEACHER_GRADING_SET_COMMENT_BUTTON = "💬 Комментировать"
+    TEACHER_GRADING_SEND_BUTTON = "📤 Отправить"
+    TEACHER_GRADING_SENT_BUTTON = "✅ Отправлено"
+    TEACHER_GRADING_CLEAR_BUTTON = "🗑️ Очистить"
+    TEACHER_GRADING_EDIT_GRADE_BUTTON = "✏️ Изменить оценку"
+    TEACHER_GRADING_EDIT_COMMENT_BUTTON = "💬 Изменить комментарий"
+    TEACHER_GRADING_ENTER_GRADE = "Введите оценку от 0 до 100 баллов."
+    TEACHER_GRADING_INVALID_GRADE = "❌ Некорректная оценка. Введите число от 0 до 100."
+    TEACHER_GRADING_GRADE_SET = "✅ Оценка установлена: {grade}/100"
+    TEACHER_GRADING_ENTER_COMMENT = (
+        "Введите комментарий к ответу студента.\n\n"
+        "Или нажмите кнопку «Пропустить», если комментарий не нужен."
+    )
+    TEACHER_GRADING_COMMENT_SET = "✅ Комментарий добавлен"
+    TEACHER_GRADING_COMMENT_SKIPPED = "Комментарий пропущен"
+    TEACHER_GRADING_COMMENT_SKIP = "Пропустить"
+    TEACHER_GRADING_SEND_CONFIRM = (
+        "Отправить оценку студенту?\n\n"
+        "<b>Оценка:</b> {grade}/100\n"
+        "<b>Комментарий:</b> {comment}"
+    )
+    TEACHER_GRADING_SEND_SUCCESS = "✅ Оценка отправлена студенту"
+    TEACHER_GRADING_SEND_ERROR = "Сначала установите оценку"
+    TEACHER_GRADING_ALREADY_SENT = "Оценка уже отправлена, если хотите изменить, используйте кнопку редактирования уже отправленных оценок."
+    TEACHER_GRADING_CLEARED = "🗑️ Оценка и комментарий очищены"
+    TEACHER_GRADING_ANSWER_NOT_FOUND = "Ответ не найден"
+    TEACHER_GRADING_NO_ANSWERS_TO_CHECK = "Нет ответов для проверки"
+    TEACHER_GRADING_NO_REVIEWED_ANSWERS = "Нет проверенных ответов"
+    TEACHER_GRADING_ALL_CHECKED = "✅ Все ответы на это задание проверены!"
+    TEACHER_GRADING_STUDENT_NOTIFICATION = (
+        "📝 Ваш ответ на задание «{homework_title}» проверен!\n\n"
+        "<b>Оценка:</b> {grade}/100\n"
+        "<b>Комментарий:</b> {comment}"
+    )
+    TEACHER_GRADING_EDIT_NOTIFICATION = (
+        "📝 Оценка за задание «{homework_title}» изменена!\n\n"
+        "<b>Новая оценка:</b> {grade}/100\n"
+        "<b>Комментарий:</b> {comment}"
+    )
+    TEACHER_GRADING_COMMENT_EDIT_NOTIFICATION = (
+        "📝 Комментарий к заданию «{homework_title}» изменён!\n\n"
+        "<b>Оценка:</b> {grade}/100\n"
+        "<b>Новый комментарий:</b> {comment}"
+    )
+    TEACHER_GRADING_COMMENT_UPDATED = "✅ Комментарий обновлён"
+
     # --- Student: join group by invite ---
     STUDENT_JOIN_GROUP_INVALID = "❌ Ссылка недействительна или группа не найдена."
     STUDENT_JOIN_GROUP_SUCCESS = (
@@ -123,6 +196,7 @@ class TextsRU(StrEnum):
     # --- Student: homeworks ---
     STUDENT_HOMEWORKS_EMPTY = "<b>Задания</b>\n\nПока нет заданий для вашей группы."
     STUDENT_HOMEWORK_ANSWER_BUTTON = "Ответить"
+    STUDENT_HOMEWORK_ANSWER_BUTTON_NOOP = "Время для ответа истекло"
     STUDENT_HOMEWORK_START_AT_LINE = "<b>Выдано:</b> {start_at}\n"
     STUDENT_HOMEWORK_TEACHER_LINE = "<b>Преподаватель:</b> {teacher_full_name}\n"
     STUDENT_HOMEWORK_ANSWER_PROMPT = (

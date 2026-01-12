@@ -13,6 +13,7 @@ from src.bot.lexicon.texts import TextsRU
 from src.bot.navigation import NavigationHelper
 from src.bot.session import UserSession
 from src.core.enums import (
+    AnswersStatusEnum,
     CommandsEnum,
     HomeworkMediaTypeEnum,
     InlineKeyboardTypeEnum,
@@ -23,6 +24,7 @@ from src.core.schemas import (
     PaginatedListKeyboardSchema,
     PaginationCallbackSchema,
     PaginationStateSchema,
+    TeacherGradingListCallbackSchema,
     TeacherHomeworkCallbackSchema,
 )
 from src.db.services import (
@@ -114,12 +116,47 @@ async def _build_homework_view_text(
     )
 
 
-def _build_homework_view_keyboard(
+async def _build_homework_view_keyboard(
     *, page: int, total_pages: int, homework_id: int
 ) -> dict:
-    return PaginatedListKeyboardSchema(
-        items=[],
-        extra_buttons=[
+
+    # Проверяем наличие ответов для проверки и проверенных ответов
+    sent_count = await AnswersService.count_by_homework_id_and_status(
+        homework_id, AnswersStatusEnum.SENT
+    )
+    reviewed_count = await AnswersService.count_by_homework_id_and_status(
+        homework_id, AnswersStatusEnum.REVIEWED
+    )
+
+    extra_buttons = []
+
+    # Добавляем кнопку "Проверить" если есть непроверенные ответы
+    if sent_count > 0:
+        extra_buttons.append(
+            InlineButtonSchema(
+                text=TextsRU.TEACHER_GRADING_CHECK_BUTTON,
+                callback_data=TeacherGradingListCallbackSchema(
+                    action="check_answers",
+                    homework_id=homework_id,
+                ).pack(),
+            )
+        )
+
+    # Добавляем кнопку "Оцененные" если есть проверенные ответы
+    if reviewed_count > 0:
+        extra_buttons.append(
+            InlineButtonSchema(
+                text=TextsRU.TEACHER_GRADING_REVIEWED_BUTTON,
+                callback_data=TeacherGradingListCallbackSchema(
+                    action="reviewed_answers",
+                    homework_id=homework_id,
+                ).pack(),
+            )
+        )
+
+    # Стандартные кнопки редактирования и удаления
+    extra_buttons.extend(
+        [
             InlineButtonSchema(
                 text=TextsRU.TEACHER_HOMEWORK_EDIT_BUTTON,
                 callback_data=TeacherHomeworkCallbackSchema(
@@ -132,7 +169,12 @@ def _build_homework_view_keyboard(
                     action="delete", homework_id=homework_id
                 ).pack(),
             ),
-        ],
+        ]
+    )
+
+    return PaginatedListKeyboardSchema(
+        items=[],
+        extra_buttons=extra_buttons,
         pagination=PaginationStateSchema(
             key=_PAGINATION_KEY, page=page, total_pages=total_pages
         ),
@@ -187,7 +229,7 @@ async def teacher_homeworks_review_handler(
             answers_count=answers_count,
         ),
         reply_markup=InlineKeyboardTypeEnum.TEACHER_HOMEWORK_REVIEW,
-        keyboard_data=_build_homework_view_keyboard(
+        keyboard_data=await _build_homework_view_keyboard(
             page=page_data.page,
             total_pages=page_data.total_pages,
             homework_id=hw.homework_id,
@@ -244,7 +286,7 @@ async def teacher_homeworks_pagination_handler(
         ),
         message_id=session.message.message_id,
         reply_markup=InlineKeyboardTypeEnum.TEACHER_HOMEWORK_REVIEW,
-        keyboard_data=_build_homework_view_keyboard(
+        keyboard_data=await _build_homework_view_keyboard(
             page=page_data.page,
             total_pages=page_data.total_pages,
             homework_id=hw.homework_id,

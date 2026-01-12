@@ -3,7 +3,7 @@ from typing import Generic, Optional, Type, TypeVar
 from pydantic import BaseModel
 from sqlalchemy import Select, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, noload
 
 from src.db.session import with_session
 from src.db.wraps import log_db_performance
@@ -44,12 +44,16 @@ class BaseCRUDMethods(Generic[ModelType, SchemaType, CreateSchemaType]):
     ) -> Select:
         """
         Добавить relationship к запросу.
+
+        Загружает только явно указанные relationships, блокируя автоматическую
+        загрузку вложенных relationships через noload('*').
         """
         relationships = set(cls.base_relationships + (relationships or []))
 
         def _joinedload_option(path: str):
             """
             Создание дополнительного запроса для relationship.
+            Блокирует автоматическую загрузку вложенных relationships.
             """
             parts = [p for p in (path or "").split(".") if p]
             if not parts:
@@ -74,6 +78,10 @@ class BaseCRUDMethods(Generic[ModelType, SchemaType, CreateSchemaType]):
                 next_attr = getattr(target_cls, part)
                 opt = opt.joinedload(next_attr)
                 current_attr = next_attr
+
+            # Блокируем автоматическую загрузку вложенных relationships,
+            # которые не были явно указаны
+            opt = opt.noload("*")
 
             return opt
 

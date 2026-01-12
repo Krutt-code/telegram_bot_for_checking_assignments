@@ -61,6 +61,9 @@ REPLY_KEYBOARDS: Dict[ReplyKeyboardTypeEnum, List[List[str]]] = {
         ],
         [COMMAND_DESCRIPTIONS_RU[CommandsEnum.TEACHER_GROUP_GET_LINK]],
     ],
+    ReplyKeyboardTypeEnum.TEACHER_GRADING_COMMENT: [
+        [TextsRU.TEACHER_GRADING_COMMENT_SKIP],
+    ],
     # TODO: Реализовать меню заданий и групп преподователя
 }
 
@@ -73,6 +76,8 @@ INLINE_KEYBOARDS: Dict[
     InlineKeyboardTypeEnum.TEACHER_HOMEWORK_EDIT_MENU: (paginated_list_inline),
     InlineKeyboardTypeEnum.TEACHER_HOMEWORK_GROUPS_SELECT: (paginated_list_inline),
     InlineKeyboardTypeEnum.TEACHER_HOMEWORK_CONFIRM: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_GRADING_CHECK: (paginated_list_inline),
+    InlineKeyboardTypeEnum.TEACHER_GRADING_REVIEWED: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_HOMEWORK_REVIEW: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_ANSWERS_REVIEW: (paginated_list_inline),
     InlineKeyboardTypeEnum.STUDENT_GROUP_EXIT: [

@@ -456,6 +456,33 @@ class TeacherHomeworkCallbackSchema(CallbackSchemaBase):
     PREFIX: ClassVar[str] = "thw"
 
 
+class TeacherGradingCallbackSchema(CallbackSchemaBase):
+    """
+    Callback для действий с конкретным ответом студента.
+
+    Формат: tg:<action>:<homework_id>:<answer_id>
+    """
+
+    action: str  # set_grade, set_comment, send_grade, edit_grade
+    homework_id: int
+    answer_id: int
+
+    PREFIX: ClassVar[str] = "tg"
+
+
+class TeacherGradingListCallbackSchema(CallbackSchemaBase):
+    """
+    Callback для просмотра списка ответов на задание.
+
+    Формат: tgl:<action>:<homework_id>
+    """
+
+    action: str  # check_answers, reviewed_answers
+    homework_id: int
+
+    PREFIX: ClassVar[str] = "tgl"
+
+
 class InlineButtonSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

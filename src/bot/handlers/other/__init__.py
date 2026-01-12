@@ -4,6 +4,7 @@ from .callbacks import callbacks_router
 from .full_name import full_name_router
 from .general_settings import general_settings_router
 from .help import help_router
+from .message import message_router
 from .navigation import navigation_router
 from .role import role_router
 from .start import start_router
@@ -16,3 +17,4 @@ other_router.include_router(navigation_router)
 other_router.include_router(role_router)
 other_router.include_router(start_router)
 other_router.include_router(help_router)
+other_router.include_router(message_router)

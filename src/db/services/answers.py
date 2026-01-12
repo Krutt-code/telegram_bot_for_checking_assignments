@@ -132,3 +132,67 @@ class AnswersService:
             count_stmt=count_stmt,
         )
         return page_models.map(AnswerSchema.model_validate)
+
+    @classmethod
+    @with_session
+    async def get_answers_page_by_homework_id(
+        cls,
+        homework_id: int,
+        *,
+        status: Optional[AnswersStatusEnum] = None,
+        page: int = 1,
+        per_page: int = 1,
+        session: AsyncSession = None,
+    ) -> Page[AnswerSchema]:
+        """
+        Пагинация ответов на задание с опциональной фильтрацией по статусу.
+        Подгружает student.user, student.group и homework для отображения.
+        """
+        stmt = (
+            select(AnswersModel)
+            .where(AnswersModel.homework_id == homework_id)
+            .options(
+                joinedload(AnswersModel.student).joinedload(StudentsModel.user),
+                joinedload(AnswersModel.student).joinedload(StudentsModel.group),
+                joinedload(AnswersModel.homework)
+                .joinedload(HomeworksModel.teacher)
+                .joinedload(TeachersModel.user),
+            )
+            .order_by(AnswersModel.answer_id.asc())
+        )
+
+        if status:
+            stmt = stmt.where(AnswersModel.status == status)
+
+        count_stmt = (
+            select(func.count())
+            .select_from(AnswersModel)
+            .where(AnswersModel.homework_id == homework_id)
+        )
+
+        if status:
+            count_stmt = count_stmt.where(AnswersModel.status == status)
+
+        page_models: Page = await paginate_select(
+            session,
+            stmt,
+            page=page,
+            per_page=per_page,
+            count_stmt=count_stmt,
+        )
+        return page_models.map(AnswerSchema.model_validate)
+
+    @classmethod
+    @with_session
+    async def count_by_homework_id_and_status(
+        cls, homework_id: int, status: AnswersStatusEnum, session: AsyncSession = None
+    ) -> int:
+        """Подсчет ответов на задание по статусу"""
+        stmt = (
+            select(func.count())
+            .select_from(AnswersModel)
+            .where(
+                AnswersModel.homework_id == homework_id, AnswersModel.status == status
+            )
+        )
+        return int((await session.scalar(stmt)) or 0)

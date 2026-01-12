@@ -21,6 +21,7 @@ from src.bot.session import UserSession
 from src.core.enums import CommandsEnum, HomeworkMediaTypeEnum, InlineKeyboardTypeEnum
 from src.core.schemas import (
     InlineButtonSchema,
+    NoopCallbackSchema,
     PaginatedListKeyboardSchema,
     PaginationCallbackSchema,
     PaginationStateSchema,
@@ -136,6 +137,13 @@ def _build_homework_keyboard(
                 callback_data=StudentHomeworkCallbackSchema(
                     action="answer", homework_id=homework_id
                 ).pack(),
+            )
+        )
+    else:
+        extra_buttons.append(
+            InlineButtonSchema(
+                text=TextsRU.STUDENT_HOMEWORK_ANSWER_BUTTON_NOOP,
+                callback_data=NoopCallbackSchema().pack(),
             )
         )
     return PaginatedListKeyboardSchema(

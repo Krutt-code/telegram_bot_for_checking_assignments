@@ -114,6 +114,7 @@ class ReplyKeyboardTypeEnum(StrEnum):
     TEACHER_GROUPS = "teacher_groups"
     TEACHER_GROUP_CREATE = "teacher_group_create"
     TEACHER_GROUP_VIEW = "teacher_group_view"
+    TEACHER_GRADING_COMMENT = "teacher_grading_comment"
 
 
 class InlineKeyboardTypeEnum(StrEnum):
@@ -128,5 +129,7 @@ class InlineKeyboardTypeEnum(StrEnum):
     STUDENT_ANSWERS_REVIEW = "student_answers_review"
     TEACHER_HOMEWORK_REVIEW = "teacher_homework_review"
     TEACHER_HOMEWORK_EDIT_MENU = "teacher_homework_edit_menu"
+    TEACHER_GRADING_CHECK = "teacher_grading_check"
+    TEACHER_GRADING_REVIEWED = "teacher_grading_reviewed"
     TEACHER_HOMEWORK_GROUPS_SELECT = "teacher_homework_groups_select"
     TEACHER_HOMEWORK_CONFIRM = "teacher_homework_confirm"
