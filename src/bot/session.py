@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, List, Optional, Union
 
+from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.methods import AnswerCallbackQuery
 from aiogram.types import (
@@ -49,6 +50,8 @@ class UserSession:
             self.message = self._get_fake_message(obj)
         else:
             raise TypeError("Неверный тип объекта для инициализации UserSession")
+
+        self.bot: Bot = self.message.bot
 
         self.user_id = self.message.from_user.id
         self.chat_id = self.message.chat.id

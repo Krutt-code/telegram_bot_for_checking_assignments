@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from aiogram import Router
+from aiogram import Bot, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -15,6 +15,7 @@ from src.bot.navigation import NavigationManager
 from src.bot.session import UserSession
 from src.core.enums import CommandsEnum, HomeworkMediaTypeEnum, InlineKeyboardTypeEnum
 from src.core.fsm_states import TeacherHomeworkCreateStates
+from src.core.logger import get_logger
 from src.core.schemas import (
     HomeworkCreateSchema,
     InlineButtonSchema,
@@ -27,10 +28,12 @@ from src.db.services import (
     HomeworkFilesService,
     HomeworkGroupsService,
     HomeworksService,
+    StudentsService,
     TeachersService,
 )
 
 teacher_homework_create_router = Router()
+logger = get_logger(__name__)
 
 _TMP_FILES_KEY = "teacher_homework_tmp_files"
 _TMP_GROUP_IDS_KEY = "teacher_homework_tmp_group_ids"
@@ -276,7 +279,6 @@ async def teacher_homework_create_groups_done(
     _: CallbackQuery,
     state: FSMContext,
     session: UserSession,
-    callback_data: TeacherHomeworkCallbackSchema,
 ) -> None:
     await session.answer_callback_query()
     selected = await state.get_value(_TMP_GROUP_IDS_KEY, []) or []
@@ -288,7 +290,6 @@ async def teacher_homework_create_groups_done(
     title = data.get("title", "")
     text = data.get("text", "")
     end_at = datetime.fromisoformat(data.get("end_at"))
-    await state.set_state(TeacherHomeworkCreateStates.confirming)
     await session.edit_message(
         TextsRU.TEACHER_HOMEWORK_PREVIEW.format(
             title=title,
@@ -300,6 +301,7 @@ async def teacher_homework_create_groups_done(
         reply_markup=InlineKeyboardTypeEnum.TEACHER_HOMEWORK_CONFIRM,
         keyboard_data=_confirm_keyboard(),
     )
+    await state.set_state(TeacherHomeworkCreateStates.confirming)
 
 
 @teacher_homework_create_router.callback_query(
@@ -352,6 +354,30 @@ async def teacher_homework_create_confirm(
         homework_id=homework_id,
         telegram_files=[TelegramFileCreateSchema.model_validate(x) for x in files_raw],
     )
+
+    # Отправляем уведомления всем студентам выбранных групп
+    for group_id in group_ids:
+        students = await StudentsService.get_all_by_group_id(int(group_id))
+        for student in students:
+            try:
+                await session.bot.send_message(
+                    chat_id=student.user_id,
+                    text=TextsRU.TEACHER_HOMEWORK_NEW_NOTIFICATION.format(
+                        title=title,
+                        end_at=end_at.strftime("%d.%m.%Y %H:%M"),
+                        teacher_full_name=teacher.user.real_full_name,
+                        text=text,
+                    ),
+                )
+            except Exception as ex:
+                logger.error(
+                    f"Не удалось отправить уведомление одному студенту: {student.user_id}",
+                    exc_info=ex,
+                )
+
+                # Не критично, если не удалось отправить уведомление одному студенту
+                # (например, студент заблокировал бота)
+                pass
 
     nav_manager = NavigationManager(state)
     await nav_manager.clear_state_and_data_keep_navigation()

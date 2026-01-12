@@ -319,3 +319,10 @@ class TextsRU(StrEnum):
     TEACHER_HOMEWORK_CONFIRM_CREATE_BUTTON = "Подтвердить"
     TEACHER_HOMEWORK_CANCEL_CREATE_BUTTON = "Отмена"
     TEACHER_HOMEWORK_CREATE_SUCCESS = "✅ Задание создано."
+    TEACHER_HOMEWORK_NEW_NOTIFICATION = (
+        "📚 Новое задание!\n\n"
+        "<b>Тема:</b> {title}\n"
+        "<b>Срок сдачи:</b> {end_at}\n"
+        "<b>Преподаватель:</b> {teacher_full_name}\n\n"
+        "<b>Описание:</b>\n{text}"
+    )
