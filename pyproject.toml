@@ -1,6 +1,6 @@
 [project]
 name = "telegram-bot-for-checking-assignments"
-version = "1.0.0"
+version = "1.0.0-beta"
 description = "Телеграм бот для проверки домашних заданий"
 authors = [
     {name = "Krutt-code",email = "brykovvita173@xmail.ru"}
