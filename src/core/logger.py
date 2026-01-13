@@ -63,7 +63,7 @@ def _build_logger(
     logger.propagate = False  # не дублируем записи в root-logger
 
     file_handler = ConcurrentRotatingFileHandler(
-        log_file, maxBytes=5 * 1024 * 1024, backupCount=7, encoding="utf-8"
+        log_file, maxBytes=5 * 1024 * 1024, backupCount=15, encoding="utf-8"
     )
     stream_handler = logging.StreamHandler()
 
