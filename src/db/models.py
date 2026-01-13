@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import TEXT, VARCHAR, DateTime, ForeignKey, func
+from sqlalchemy import TEXT, VARCHAR, BigInteger, DateTime, ForeignKey, func
 from sqlalchemy.orm import DeclarativeBase as BaseModel
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -17,7 +17,7 @@ class Base(BaseModel):
 class TelegramUsersModel(Base):
     __tablename__ = "telegram_users"
 
-    user_id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     username: Mapped[Optional[str]] = mapped_column(VARCHAR(63), default=None)
     full_name: Mapped[Optional[str]] = mapped_column(VARCHAR(127), default=None)
     real_full_name: Mapped[Optional[str]] = mapped_column(VARCHAR(127), default=None)

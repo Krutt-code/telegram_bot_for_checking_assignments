@@ -74,7 +74,7 @@ class Settings(BaseSettings):
             # redis://:password@host
             auth = f":{password}@"
         elif user and not password:
-            # редкий кейс, но поддержим
+            # редкий случай, но поддержим
             auth = f"{user}@"
 
         return f"redis://{auth}{self.redis_host}:{port}/{db}"

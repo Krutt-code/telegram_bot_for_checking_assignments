@@ -9,7 +9,6 @@ from src.core.settings import settings
 from src.db import database_logger
 
 # 1. Создаем асинхронный "движок" для подключения к базе данных.
-# Оптимизированные настройки для MySQL 5.7
 async_engine = create_async_engine(
     settings.actual_database_url,
     echo=False,
@@ -20,14 +19,6 @@ async_engine = create_async_engine(
         settings.db_max_overflow or 10
     ),  # Разрешаем больше временных соединений
     pool_timeout=(settings.db_pool_timeout or 30),
-    # # Важные настройки для MySQL 5.7
-    # connect_args={
-    #     "ssl": (
-    #         {"ssl_verify_cert": False}
-    #         if settings.actual_database_url.startswith("mysql")
-    #         else {}
-    #     ),
-    # },
 )
 
 # 2. Создаем "фабрику сессий".
