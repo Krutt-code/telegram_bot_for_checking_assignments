@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Дек 11 2025 г., 16:58
+-- Время создания: Янв 12 2026 г., 23:48
 -- Версия сервера: 8.0.44-0ubuntu0.24.04.2
 -- Версия PHP: 8.3.6
 
@@ -30,7 +30,7 @@ USE `bot`;
 --
 
 CREATE TABLE `admins` (
-  `user_id` int NOT NULL
+  `user_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Администраторы';
 
 --
@@ -194,7 +194,7 @@ CREATE TABLE `homework_groups` (
 
 CREATE TABLE `students` (
   `student_id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `group_id` int DEFAULT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -202,10 +202,10 @@ CREATE TABLE `students` (
 
 --
 -- ССЫЛКИ ТАБЛИЦЫ `students`:
---   `user_id`
---       `telegram_users` -> `user_id`
 --   `group_id`
 --       `groups` -> `group_id`
+--   `user_id`
+--       `telegram_users` -> `user_id`
 --
 
 -- --------------------------------------------------------
@@ -216,7 +216,7 @@ CREATE TABLE `students` (
 
 CREATE TABLE `teachers` (
   `teacher_id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -237,7 +237,7 @@ CREATE TABLE `telegram_files` (
   `file_id` text NOT NULL COMMENT 'Текущий file_id для отправки файла (может меняться!)',
   `unique_file_id` text NOT NULL COMMENT 'Стабильный уникальный идентификатор файла',
   `file_type` text NOT NULL COMMENT 'Тип файла',
-  `owner_user_id` int NOT NULL COMMENT 'От кого был переслан файл',
+  `owner_user_id` bigint NOT NULL COMMENT 'От кого был переслан файл',
   `caption` text COMMENT 'Описание для файла',
   `mime_type` text COMMENT 'Тип содержимого',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -257,7 +257,7 @@ CREATE TABLE `telegram_files` (
 --
 
 CREATE TABLE `telegram_users` (
-  `user_id` int NOT NULL COMMENT 'ID в телеграмм',
+  `user_id` bigint NOT NULL COMMENT 'ID в телеграмм',
   `username` varchar(63) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'Короткое имя в телеграмм',
   `full_name` varchar(127) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'Отображаемое имя в телеграмм',
   `real_full_name` varchar(127) DEFAULT NULL COMMENT 'Полное реальное имя человека'
@@ -265,6 +265,24 @@ CREATE TABLE `telegram_users` (
 
 --
 -- ССЫЛКИ ТАБЛИЦЫ `telegram_users`:
+--
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `user_locks`
+--
+
+CREATE TABLE `user_locks` (
+  `user_id` bigint NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Заблокированные пользователи';
+
+--
+-- ССЫЛКИ ТАБЛИЦЫ `user_locks`:
+--   `user_id`
+--       `telegram_users` -> `user_id`
 --
 
 --
@@ -299,6 +317,7 @@ ALTER TABLE `answer_files`
 --
 ALTER TABLE `assigned_groups`
   ADD PRIMARY KEY (`assigned_group_id`),
+  ADD UNIQUE KEY `teacher_id_2` (`teacher_id`,`group_id`),
   ADD KEY `teacher_id` (`teacher_id`),
   ADD KEY `group_id` (`group_id`);
 
@@ -360,6 +379,14 @@ ALTER TABLE `telegram_files`
 --
 ALTER TABLE `telegram_users`
   ADD PRIMARY KEY (`user_id`);
+
+--
+-- Индексы таблицы `user_locks`
+--
+ALTER TABLE `user_locks`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `user_id_2` (`user_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -433,7 +460,7 @@ ALTER TABLE `telegram_files`
 -- Ограничения внешнего ключа таблицы `admins`
 --
 ALTER TABLE `admins`
-  ADD CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `telegram_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `telegram_users` (`user_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `answers`
@@ -480,8 +507,8 @@ ALTER TABLE `homework_groups`
 -- Ограничения внешнего ключа таблицы `students`
 --
 ALTER TABLE `students`
-  ADD CONSTRAINT `students_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `telegram_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `students_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`) ON DELETE SET NULL ON UPDATE SET NULL;
+  ADD CONSTRAINT `students_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`),
+  ADD CONSTRAINT `students_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `telegram_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `teachers`
@@ -493,7 +520,13 @@ ALTER TABLE `teachers`
 -- Ограничения внешнего ключа таблицы `telegram_files`
 --
 ALTER TABLE `telegram_files`
-  ADD CONSTRAINT `telegram_files_ibfk_1` FOREIGN KEY (`owner_user_id`) REFERENCES `telegram_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `telegram_files_ibfk_1` FOREIGN KEY (`owner_user_id`) REFERENCES `telegram_users` (`user_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `user_locks`
+--
+ALTER TABLE `user_locks`
+  ADD CONSTRAINT `user_locks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `telegram_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

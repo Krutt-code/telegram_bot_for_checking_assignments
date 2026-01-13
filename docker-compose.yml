@@ -94,18 +94,19 @@ services:
       - ./logs:/app/logs
     environment:
       # Redis предпочтительно задавать компонентами
-      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_DB: ${REDIS_DB:-0}
       REDIS_USER: ${REDIS_USER:-}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-mypassword}
+      REDIS_URL: ${REDIS_URL:-}
 
       # MySQL (если MYSQL_URL пустой — будут использованы компоненты)
       MYSQL_URL: ${MYSQL_URL:-}
       MYSQL_USER: ${MYSQL_USER:-user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-bot}
-      MYSQL_HOST: ${MYSQL_HOST:-database}
+      MYSQL_HOST: database
     networks:
       - backend
     depends_on:

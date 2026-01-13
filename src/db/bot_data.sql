@@ -3,11 +3,12 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Дек 11 2025 г., 16:57
+-- Время создания: Янв 12 2026 г., 23:49
 -- Версия сервера: 8.0.44-0ubuntu0.24.04.2
 -- Версия PHP: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET FOREIGN_KEY_CHECKS = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -22,7 +23,9 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `bot` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `bot`;
+
 COMMIT;
+SET FOREIGN_KEY_CHECKS = 1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
