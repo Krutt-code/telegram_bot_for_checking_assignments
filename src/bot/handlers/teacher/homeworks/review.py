@@ -206,7 +206,10 @@ async def teacher_homeworks_review_handler(
         teacher.teacher_id, page=1, per_page=_PER_PAGE
     )
     if not page_data.items:
-        await session.answer(TextsRU.TEACHER_HOMEWORKS_EMPTY)
+        await session.answer(
+            TextsRU.TEACHER_HOMEWORKS_EMPTY,
+            reply_markup=ReplyKeyboardTypeEnum.TEACHER_HOMEWORKS,
+        )
         return
     await state.update_data(
         {
